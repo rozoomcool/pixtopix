@@ -1,4 +1,4 @@
-package com.rozoomcool.testapp.ui.navigation
+package com.rozoomcool.testapp.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember

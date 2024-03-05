@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import com.rozoomcool.testapp.presentation.MainScreen
 import com.rozoomcool.testapp.ui.animations.StarsAnimation
 import kotlinx.coroutines.delay
 
@@ -38,13 +39,7 @@ class MainActivity : ComponentActivity() {
             TestappTheme(
                 darkTheme = true
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(colorScheme.background)
-                ) {
-                    StarsAnimation()
-                }
+                MainScreen()
             }
         }
     }
