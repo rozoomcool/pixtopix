@@ -71,7 +71,7 @@ fun updateStars(stars: List<Star>, windowSize: Size): List<Star> {
     return result
 }
 
-fun generateStars(windowSize: Size, count: Int = 70): List<Star> {
+fun generateStars(windowSize: Size, count: Int = 100): List<Star> {
     val stars = mutableListOf<Star>()
 
     repeat(count) {

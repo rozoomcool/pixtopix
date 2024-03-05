@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.rozoomcool.testapp"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -57,6 +57,7 @@ kapt {
 
 dependencies {
     implementation(libs.hilt.android)
+    implementation(libs.androidx.compose.material)
     kapt(libs.hilt.android.compiler)
 
     implementation(libs.androidx.navigation.compose)
