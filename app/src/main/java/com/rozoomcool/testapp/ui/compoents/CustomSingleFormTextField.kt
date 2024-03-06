@@ -34,6 +34,7 @@ fun CustomSingleFormTextField(
     )
 
     BasicTextField(modifier = Modifier
+        .fillMaxWidth()
         .clip(RoundedCornerShape(6.dp))
         .background(colorScheme.background),
         value = value,
@@ -47,7 +48,6 @@ fun CustomSingleFormTextField(
             ) {
                 Box(
                     Modifier
-                        .weight(1f)
                         .padding(vertical = 6.dp, horizontal = 8.dp)
                 ) {
                     if (value == "") Text(
