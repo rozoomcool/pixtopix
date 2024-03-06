@@ -24,10 +24,7 @@ fun AppNavGraph(
         }
 
         dialog(Screen.CreateProject.route) {
-            CreateProjectDialog(
-                onDismissRequest = { /*TODO*/ },
-                onConfirmation = { /*TODO*/ }
-            )
+            createProjectDialogContent()
         }
     }
 }

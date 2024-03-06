@@ -10,13 +10,13 @@ class NavigationState (
     val navHostController: NavHostController
 ) {
 
-    fun navigateTo(route: String) {
+    fun navigatePushTo(route: String) {
         navHostController.navigate(route) {
             popUpTo(navHostController.graph.findStartDestination().id)
         }
     }
 
-    fun bottomBarNavigateTo(route: String) {
+    fun navigateTo(route: String) {
         navHostController.navigate(route) {
             popUpTo(navHostController.graph.findStartDestination().id) {
                 saveState = true
@@ -24,6 +24,10 @@ class NavigationState (
             launchSingleTop = true
             restoreState = true
         }
+    }
+
+    fun pop() {
+        navHostController.popBackStack()
     }
 }
 

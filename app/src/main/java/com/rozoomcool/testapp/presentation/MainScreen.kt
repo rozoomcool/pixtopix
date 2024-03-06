@@ -14,9 +14,15 @@ fun MainScreen() {
         navigationState = navigationState,
         startProjectContent = { StartProjectScreen(
             onCreateProjectClickListener = {
-                navigationState.navHostController.navigate(Screen.CreateProject.route)
+                navigationState.navigateTo(Screen.CreateProject.route)
             },
             onOpenProjectClickListener = {}
-        ) }
+        ) },
+        createProjectDialogContent = {
+            CreateProjectDialog(
+                onDismissRequest = { navigationState.pop() },
+                onConfirmation = { /*TODO*/ }
+            )
+        }
     )
 }
