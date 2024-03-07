@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
+import com.rozoomcool.testapp.ui.compoents.EditorBottomBar
 import com.rozoomcool.testapp.ui.compoents.EditorTopBar
 
 
@@ -20,6 +21,9 @@ fun EditorScreen() {
     Scaffold(
         topBar = {
             EditorTopBar()
+        },
+        bottomBar = {
+            EditorBottomBar()
         }
     ) { paddingValues ->
 
