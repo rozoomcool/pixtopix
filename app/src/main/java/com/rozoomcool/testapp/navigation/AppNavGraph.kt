@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import com.rozoomcool.testapp.presentation.CreateProjectDialog
+import com.rozoomcool.testapp.presentation.EditorScreen
 
 
 @Composable
@@ -21,6 +22,12 @@ fun AppNavGraph(
             route = Screen.StartProject.route
         ) {
             startProjectContent()
+        }
+
+        composable(
+            route = Screen.Editor.route
+        ) {
+            EditorScreen()
         }
 
         dialog(Screen.CreateProject.route) {

@@ -21,7 +21,7 @@ fun MainScreen() {
         createProjectDialogContent = {
             CreateProjectDialog(
                 onDismissRequest = { navigationState.pop() },
-                onConfirmation = { /*TODO*/ }
+                onCreateButtonClickListener = { navigationState.navigateTo(Screen.Editor.route) }
             )
         }
     )

@@ -34,7 +34,7 @@ import com.rozoomcool.testapp.ui.compoents.CustomSingleFormTextField
 @Composable
 fun CreateProjectDialog(
     onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit
+    onCreateButtonClickListener: () -> Unit
 ) {
     Dialog(onDismissRequest = { onDismissRequest() }) {
         // Draw a rectangle shape with rounded corners inside the dialog
@@ -119,26 +119,9 @@ fun CreateProjectDialog(
                 colors = ButtonDefaults.filledTonalButtonColors(
                     containerColor = colorScheme.secondaryContainer.copy(alpha = 0.7f)
                 ),
-                onClick = { /*TODO*/ }) {
+                onClick = { onCreateButtonClickListener() }) {
                 Text("Создать")
             }
-//            Box(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(top = 12.dp)
-//                    .clip(
-//                        RoundedCornerShape(
-//                            topStart = 12.dp,
-//                            topEnd = 12.dp,
-//                            bottomStart = 24.dp,
-//                            bottomEnd = 24.dp
-//                        )
-//                    )
-//                    .background(colorScheme.background),
-//                contentAlignment = Alignment.Center
-//            ) {
-//
-//            }
         }
     }
 }
