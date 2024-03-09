@@ -5,13 +5,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.rozoomcool.testapp.ui.theme.TestappTheme
-import dagger.hilt.android.AndroidEntryPoint
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
 import com.rozoomcool.testapp.presentation.MainScreen
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.activityScope
+import org.koin.core.scope.Scope
 
-@AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), AndroidScopeComponent {
+
+    override val scope: Scope by activityScope()
+
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

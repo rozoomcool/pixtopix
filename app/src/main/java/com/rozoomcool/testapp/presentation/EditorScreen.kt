@@ -94,14 +94,14 @@ fun EditorScreen() {
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .pointerInput(Unit) {
-                    detectTransformGestures { _, _, zoom, _ ->
-//                        Log.d("===", zoom.dp.toString())
-                        coroutineScope.launch(Dispatchers.Default) {
-                            scaleFactor *= zoom
-                        }
-                    }
-                }
+//                .pointerInput(Unit) {
+//                    detectTransformGestures { _, _, zoom, _ ->
+////                        Log.d("===", zoom.dp.toString())
+//                        coroutineScope.launch(Dispatchers.Default) {
+//                            scaleFactor *= zoom
+//                        }
+//                    }
+//                }
         ) {
 
             val pixelSize: Float = (LocalConfiguration.current.screenWidthDp / cols).toFloat()
@@ -112,7 +112,8 @@ fun EditorScreen() {
                     .height((pixelSize * rows).dp)
                     .scale(scaleFactor)
                     .pointerInput(Unit) {
-                        val localPixelSize: Float = (size.width / cols).toFloat()
+                        val localPixelSize = (size.width / cols)
+
                         detectTapGestures { onTap ->
                             coroutineScope.launch(Dispatchers.Default) {
                                 val cordX =
@@ -136,13 +137,14 @@ fun EditorScreen() {
                         }
                     }
                     .pointerInput(Unit) {
+                        val localPixelSize = (size.width / cols)
                         detectDragGestures(
                             onDrag = { change, _ ->
                                 coroutineScope.launch(Dispatchers.Default) {
                                     val cordX =
-                                        ((change.position.x - (change.position.x % pixelSize)) / pixelSize).toInt()
+                                        ((change.position.x - (change.position.x % localPixelSize)) / localPixelSize).toInt()
                                     val cordY =
-                                        ((change.position.y - (change.position.y % pixelSize)) / pixelSize).toInt()
+                                        ((change.position.y - (change.position.y % localPixelSize)) / localPixelSize).toInt()
 
                                     if (cordX !in 0..<cols && cordY !in 0..<rows) {
                                         cancel()

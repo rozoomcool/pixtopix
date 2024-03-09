@@ -1,9 +1,11 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    kotlin("kapt")
-    id("com.google.dagger.hilt.android")
+//    kotlin("kapt")
+//    id("com.google.dagger.hilt.android")
 }
+
+val koinAndroidComposeVersion = "3.5.0"
 
 android {
     namespace = "com.rozoomcool.testapp"
@@ -52,14 +54,27 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
+//kapt {
+//    correctErrorTypes = true
+//}
 
 dependencies {
-    implementation(libs.hilt.android)
     implementation(libs.androidx.compose.material)
-    kapt(libs.hilt.android.compiler)
+
+//    implementation(libs.hilt.android)
+//    implementation(libs.androidx.hilt.navigation.fragment)
+//    implementation(libs.androidx.hilt.work)
+//    kapt(libs.androidx.hilt.compiler)
+//    kapt(libs.hilt.android.compiler)
+//    annotationProcessor(libs.androidx.hilt.compiler.v120)
+//    implementation(libs.dagger.hilt.android)
+//    //noinspection UseTomlInstead
+//    kapt("com.google.dagger:hilt-compiler")
+
+    implementation (libs.koin.android)
+    implementation (libs.koin.androidx.navigation)
+    implementation(libs.koin.androidx.compose)
+    testImplementation (libs.koin.test.junit4)
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material.icons.extended)
