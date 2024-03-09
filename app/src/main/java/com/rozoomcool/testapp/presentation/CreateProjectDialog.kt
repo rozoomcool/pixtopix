@@ -1,5 +1,6 @@
 package com.rozoomcool.testapp.presentation
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,18 +25,35 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.rozoomcool.testapp.domain.editorViewModel.EditorEvent
+import com.rozoomcool.testapp.domain.editorViewModel.EditorState
 import com.rozoomcool.testapp.ui.compoents.CustomSingleFormTextField
 
 @Composable
 fun CreateProjectDialog(
+    editorState: EditorState,
+    onEditorEvent: (EditorEvent) -> Unit,
     onDismissRequest: () -> Unit,
     onCreateButtonClickListener: () -> Unit
 ) {
+
+    val title = remember { mutableStateOf("") }
+    val width = remember {
+        mutableStateOf("")
+    }
+    val height = remember {
+        mutableStateOf("")
+    }
+
+
     Dialog(onDismissRequest = { onDismissRequest() }) {
         // Draw a rectangle shape with rounded corners inside the dialog
         Column {
@@ -59,8 +77,8 @@ fun CreateProjectDialog(
                         modifier = Modifier.padding(16.dp),
                     )
                     CustomSingleFormTextField(
-                        value = "",
-                        onValueChanged = {},
+                        value = title.value,
+                        onValueChanged = { title.value = it },
                         label = "Название"
                     )
                     Spacer(Modifier.height(12.dp))
@@ -84,8 +102,8 @@ fun CreateProjectDialog(
                                 modifier = Modifier.weight(0.2f)
                             ) {
                                 CustomSingleFormTextField(
-                                    value = "",
-                                    onValueChanged = {}
+                                    value = height.value,
+                                    onValueChanged = {height.value = it}
                                 )
                             }
                             Text(
@@ -98,8 +116,8 @@ fun CreateProjectDialog(
                                 modifier = Modifier.weight(0.2f)
                             ) {
                                 CustomSingleFormTextField(
-                                    value = "",
-                                    onValueChanged = {}
+                                    value = width.value,
+                                    onValueChanged = {width.value = it}
                                 )
                             }
                         }

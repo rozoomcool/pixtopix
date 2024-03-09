@@ -2,6 +2,9 @@ package com.rozoomcool.testapp
 
 import android.app.Application
 import com.rozoomcool.testapp.di.appModule
+import com.rozoomcool.testapp.di.viewModelModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
 
 class App: Application() {
@@ -9,7 +12,9 @@ class App: Application() {
         super.onCreate()
 
         startKoin {
-            modules(appModule)
+            androidLogger()
+            androidContext(this@App)
+            modules(appModule, viewModelModule)
         }
     }
 }

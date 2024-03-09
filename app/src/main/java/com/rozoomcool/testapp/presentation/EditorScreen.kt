@@ -94,14 +94,14 @@ fun EditorScreen() {
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-//                .pointerInput(Unit) {
-//                    detectTransformGestures { _, _, zoom, _ ->
-////                        Log.d("===", zoom.dp.toString())
-//                        coroutineScope.launch(Dispatchers.Default) {
-//                            scaleFactor *= zoom
-//                        }
-//                    }
-//                }
+                .pointerInput(false) {
+                    detectTransformGestures { _, _, zoom, _ ->
+//                        Log.d("===", zoom.dp.toString())
+                        coroutineScope.launch(Dispatchers.Default) {
+                            scaleFactor *= zoom
+                        }
+                    }
+                }
         ) {
 
             val pixelSize: Float = (LocalConfiguration.current.screenWidthDp / cols).toFloat()
@@ -115,43 +115,13 @@ fun EditorScreen() {
                         val localPixelSize = (size.width / cols)
 
                         detectTapGestures { onTap ->
-                            coroutineScope.launch(Dispatchers.Default) {
+//                            coroutineScope.launch(Dispatchers.Default) {
                                 val cordX =
                                     ((onTap.x - (onTap.x % localPixelSize)) / localPixelSize).toInt()
                                 val cordY =
                                     ((onTap.y - (onTap.y % localPixelSize)) / localPixelSize).toInt()
 
-                                if (cordX !in 0..<cols && cordY !in 0..<rows) {
-                                    cancel()
-                                }
-
-//                                Log.d("===", "x: $cordX, Y: $cordY")
-
-                                plane.value = addPixel(
-                                    plane.value,
-                                    cordX,
-                                    cordY,
-                                    0xFFFF0000
-                                )
-                            }
-                        }
-                    }
-                    .pointerInput(Unit) {
-                        val localPixelSize = (size.width / cols)
-                        detectDragGestures(
-                            onDrag = { change, _ ->
-                                coroutineScope.launch(Dispatchers.Default) {
-                                    val cordX =
-                                        ((change.position.x - (change.position.x % localPixelSize)) / localPixelSize).toInt()
-                                    val cordY =
-                                        ((change.position.y - (change.position.y % localPixelSize)) / localPixelSize).toInt()
-
-                                    if (cordX !in 0..<cols && cordY !in 0..<rows) {
-                                        cancel()
-                                    }
-
-//                                    Log.d("===", "x: $cordX, Y: $cordY")
-
+                                if (cordX in 0..<cols && cordY in 0..<rows) {
                                     plane.value = addPixel(
                                         plane.value,
                                         cordX,
@@ -159,6 +129,30 @@ fun EditorScreen() {
                                         0xFFFF0000
                                     )
                                 }
+
+//                                Log.d("===", "x: $cordX, Y: $cordY")
+//                            }
+                        }
+                    }
+                    .pointerInput(Unit) {
+                        val localPixelSize = (size.width / cols)
+                        detectDragGestures(
+                            onDrag = { change, _ ->
+                                    val cordX =
+                                        ((change.position.x - (change.position.x % localPixelSize)) / localPixelSize).toInt()
+                                    val cordY =
+                                        ((change.position.y - (change.position.y % localPixelSize)) / localPixelSize).toInt()
+
+                                    if (cordX in 0..<cols && cordY in 0..<rows) {
+                                        plane.value = addPixel(
+                                            plane.value,
+                                            cordX,
+                                            cordY,
+                                            0xFFFF0000
+                                        )
+                                    }
+
+//                                    Log.d("===", "x: $cordX, Y: $cordY")
                             }
                         )
                     }

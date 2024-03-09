@@ -11,18 +11,6 @@ fun MainScreen() {
     val navigationState = rememberNavigationState()
 
     AppNavGraph(
-        navigationState = navigationState,
-        startProjectContent = { StartProjectScreen(
-            onCreateProjectClickListener = {
-                navigationState.navigateTo(Screen.CreateProject.route)
-            },
-            onOpenProjectClickListener = {}
-        ) },
-        createProjectDialogContent = {
-            CreateProjectDialog(
-                onDismissRequest = { navigationState.pop() },
-                onCreateButtonClickListener = { navigationState.navigateTo(Screen.Editor.route) }
-            )
-        }
+        navigationState = navigationState
     )
 }
