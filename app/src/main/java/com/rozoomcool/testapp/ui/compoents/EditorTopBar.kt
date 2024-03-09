@@ -24,12 +24,12 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditorTopBar() {
+fun EditorTopBar(title: String = "") {
     CenterAlignedTopAppBar(
         title = {
             Text(
                 modifier = Modifier.padding(start = 24.dp),
-                text = "Project name",
+                text = title,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight(400)),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

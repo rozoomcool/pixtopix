@@ -1,22 +1,16 @@
 package com.rozoomcool.testapp.navigation
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.dialog
-import com.rozoomcool.testapp.domain.editorViewModel.EditorViewModel
-import com.rozoomcool.testapp.presentation.CreateProjectDialog
-import com.rozoomcool.testapp.presentation.EditorScreen
 import com.rozoomcool.testapp.presentation.StartProjectScreen
-import org.koin.androidx.compose.getViewModel
 
 
+@SuppressLint("RestrictedApi")
 @Composable
 fun AppNavGraph(
-    navigationState: NavigationState,
-//    startProjectContent: @Composable () -> Unit,
-//    createProjectDialogContent: @Composable () -> Unit
+    navigationState: NavigationState
 ) {
     NavHost(
         navController = navigationState.navHostController,
@@ -33,24 +27,6 @@ fun AppNavGraph(
             )
         }
 
-        composable(
-            route = Screen.Editor.route
-        ) {
-            EditorScreen()
-        }
-
-        dialog(Screen.CreateProject.route) {
-
-            val editorViewModel = getViewModel<EditorViewModel>()
-            val state = editorViewModel.state.collectAsState()
-            val onEditorEvent = editorViewModel::onEvent
-
-            CreateProjectDialog(
-                editorState = state.value,
-                onEditorEvent = onEditorEvent,
-                onDismissRequest = { navigationState.pop() },
-                onCreateButtonClickListener = { navigationState.navigateTo(Screen.Editor.route) }
-            )
-        }
+        editorNavGraph(navigationState)
     }
 }

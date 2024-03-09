@@ -37,22 +37,25 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import com.rozoomcool.testapp.domain.editorViewModel.EditorEvent
+import com.rozoomcool.testapp.domain.editorViewModel.EditorState
 import com.rozoomcool.testapp.model.Pixel
 import com.rozoomcool.testapp.ui.compoents.EditorBottomBar
 import com.rozoomcool.testapp.ui.compoents.EditorTopBar
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-
-
-val rows = 32
-val cols = 32
-val fieldSize: Size = Size(cols.toFloat(), rows.toFloat())
-
 
 @SuppressLint("MutableCollectionMutableState", "CoroutineCreationDuringComposition")
 @Composable
-fun EditorScreen() {
+fun EditorScreen(
+    editorState: EditorState,
+    onEditorEvent: (EditorEvent) -> Unit
+) {
+
+    val rows = editorState.field.height
+    val cols = editorState.field.width
+
+
     val coroutineScope = rememberCoroutineScope()
     val plane = remember {
         mutableStateOf(setOf<Pixel>())
@@ -60,10 +63,6 @@ fun EditorScreen() {
     var scaleFactor by remember {
         mutableFloatStateOf(1f)
     }
-
-//    coroutineScope.launch {
-//        plane.value = generateEmptyPlane(rows, cols)
-//    }
 
     Scaffold(
         topBar = {
@@ -214,9 +213,7 @@ suspend fun generateEmptyPlane(rows: Int, cols: Int): List<Pixel> {
 
 fun addPixel(pixels: Set<Pixel>, x: Int, y: Int, color: Long): Set<Pixel> {
     val newList: MutableSet<Pixel> = pixels.toMutableSet()
-    if (x in 0..<cols && y in 0..<rows) {
-        newList.apply { add(Pixel(x, y, color)) }
-    }
+    newList.apply { add(Pixel(x, y, color)) }
     Log.d("===", newList.size.toString())
     return newList
 }

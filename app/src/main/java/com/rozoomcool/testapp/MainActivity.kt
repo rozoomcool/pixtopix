@@ -8,15 +8,10 @@ import com.rozoomcool.testapp.ui.theme.TestappTheme
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
 import com.rozoomcool.testapp.presentation.MainScreen
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.activityScope
-import org.koin.core.scope.Scope
+import dagger.hilt.android.AndroidEntryPoint
 
-class MainActivity : ComponentActivity(), AndroidScopeComponent {
-
-    override val scope: Scope by activityScope()
-
-    @RequiresApi(Build.VERSION_CODES.R)
+@AndroidEntryPoint
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

@@ -1,11 +1,13 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-//    kotlin("kapt")
-//    id("com.google.dagger.hilt.android")
+    id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
+    id("kotlin-parcelize")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
 }
 
-val koinAndroidComposeVersion = "3.5.0"
+val kotlinVersion = "1.5.3"
 
 android {
     namespace = "com.rozoomcool.testapp"
@@ -35,46 +37,33 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = kotlinVersion
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    buildToolsVersion = "34.0.0"
 }
-
-//kapt {
-//    correctErrorTypes = true
-//}
 
 dependencies {
     implementation(libs.androidx.compose.material)
 
-//    implementation(libs.hilt.android)
-//    implementation(libs.androidx.hilt.navigation.fragment)
-//    implementation(libs.androidx.hilt.work)
-//    kapt(libs.androidx.hilt.compiler)
-//    kapt(libs.hilt.android.compiler)
-//    annotationProcessor(libs.androidx.hilt.compiler.v120)
-//    implementation(libs.dagger.hilt.android)
-//    //noinspection UseTomlInstead
-//    kapt("com.google.dagger:hilt-compiler")
-
-    implementation (libs.koin.android)
-    implementation (libs.koin.androidx.navigation)
-    implementation(libs.koin.androidx.compose)
-    testImplementation (libs.koin.test.junit4)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler.v120)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material.icons.extended)
