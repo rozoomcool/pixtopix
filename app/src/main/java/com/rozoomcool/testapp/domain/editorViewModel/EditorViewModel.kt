@@ -58,9 +58,9 @@ class EditorViewModel @Inject constructor() : ViewModel() {
         val localPixelSize = size.width / _state.value.field.width
 
         val cordX =
-            ((x - (x % localPixelSize)) / localPixelSize).toInt()
+            (x / localPixelSize).toInt()
         val cordY =
-            ((y - (y % localPixelSize)) / localPixelSize).toInt()
+            (y / localPixelSize).toInt()
 
         if (cordX !in 0..<_state.value.field.width && cordY !in 0..<_state.value.field.height) {
             return

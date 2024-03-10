@@ -1,19 +1,14 @@
 package com.rozoomcool.testapp.navigation
 
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
-import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.rozoomcool.testapp.domain.editorViewModel.EditorEvent
 import com.rozoomcool.testapp.domain.editorViewModel.EditorViewModel
 import com.rozoomcool.testapp.presentation.CreateProjectDialog
-import com.rozoomcool.testapp.presentation.EditorScreen
+import com.rozoomcool.testapp.presentation.editor.EditorScreen
 
 fun NavGraphBuilder.editorNavGraph(
     navigationState: NavigationState
