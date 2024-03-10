@@ -1,11 +1,14 @@
 package com.rozoomcool.testapp.navigation
 
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.rozoomcool.testapp.domain.editorViewModel.EditorEvent
 import com.rozoomcool.testapp.domain.editorViewModel.EditorViewModel
@@ -20,10 +23,13 @@ fun NavGraphBuilder.editorNavGraph(
         startDestination = Screen.CreateProject.route
     ) {
 
-        dialog(Screen.CreateProject.route) {
+        dialog(Screen.CreateProject.route) {entry ->
+
+            val editorViewModel = entry.sharedViewModel<EditorViewModel>(navController = navigationState.navHostController)
 
             CreateProjectDialog(
-                navigationState = navigationState
+                navigationState = navigationState,
+                onEditorEvent = editorViewModel::onEvent
             )
         }
 
@@ -31,20 +37,8 @@ fun NavGraphBuilder.editorNavGraph(
             route = Screen.EditorProject.route
         ) {entry ->
 
-            val editorViewModel = hiltViewModel<EditorViewModel>()
+            val editorViewModel = entry.sharedViewModel<EditorViewModel>(navController = navigationState.navHostController)
             val editorState = editorViewModel.state.collectAsState().value
-
-            val title: String = entry.arguments?.getString("title") ?: ""
-            val width: Int = entry.arguments?.getInt("width") ?: 1
-            val height: Int = entry.arguments?.getInt("height") ?: 1
-
-            editorViewModel.onEvent(
-                EditorEvent.Create(
-                    title = title,
-                    width = width,
-                    height = height
-                )
-            )
 
             Log.d("===", "editor ${editorViewModel.hashCode()} | ${editorState}")
 

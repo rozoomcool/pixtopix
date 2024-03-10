@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -57,9 +56,7 @@ fun EditorScreen(
 
 
     val coroutineScope = rememberCoroutineScope()
-    val plane = remember {
-        mutableStateOf(setOf<Pixel>())
-    }
+    val pixels = editorState.field.pixels
     var scaleFactor by remember {
         mutableFloatStateOf(1f)
     }
@@ -70,7 +67,7 @@ fun EditorScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-                EditorTopBar()
+                EditorTopBar(editorState.title)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -111,47 +108,20 @@ fun EditorScreen(
                     .height((pixelSize * rows).dp)
                     .scale(scaleFactor)
                     .pointerInput(Unit) {
-                        val localPixelSize = (size.width / cols)
-
                         detectTapGestures { onTap ->
-//                            coroutineScope.launch(Dispatchers.Default) {
-                                val cordX =
-                                    ((onTap.x - (onTap.x % localPixelSize)) / localPixelSize).toInt()
-                                val cordY =
-                                    ((onTap.y - (onTap.y % localPixelSize)) / localPixelSize).toInt()
-
-                                if (cordX in 0..<cols && cordY in 0..<rows) {
-                                    plane.value = addPixel(
-                                        plane.value,
-                                        cordX,
-                                        cordY,
-                                        0xFFFF0000
-                                    )
-                                }
-
-//                                Log.d("===", "x: $cordX, Y: $cordY")
-//                            }
+                            onEditorEvent(EditorEvent.DrawPixel(onTap.x, onTap.y, size))
                         }
                     }
                     .pointerInput(Unit) {
-                        val localPixelSize = (size.width / cols)
                         detectDragGestures(
-                            onDrag = { change, _ ->
-                                    val cordX =
-                                        ((change.position.x - (change.position.x % localPixelSize)) / localPixelSize).toInt()
-                                    val cordY =
-                                        ((change.position.y - (change.position.y % localPixelSize)) / localPixelSize).toInt()
-
-                                    if (cordX in 0..<cols && cordY in 0..<rows) {
-                                        plane.value = addPixel(
-                                            plane.value,
-                                            cordX,
-                                            cordY,
-                                            0xFFFF0000
-                                        )
-                                    }
-
-//                                    Log.d("===", "x: $cordX, Y: $cordY")
+                            onDrag = { change, dragAmount ->
+                                onEditorEvent(
+                                    EditorEvent.DrawLine(
+                                        start = change.position - dragAmount,
+                                        end = change.position,
+                                        size
+                                    )
+                                )
                             }
                         )
                     }
@@ -167,8 +137,8 @@ fun EditorScreen(
                             it.drawRect(
                                 Rect(
                                     Offset(
-                                    x = pixelSize * (j) * fScale,
-                                    y = pixelSize * (i) * fScale
+                                        x = pixelSize * (j) * fScale,
+                                        y = pixelSize * (i) * fScale
                                     ),
                                     Size(pixelSize * fScale, pixelSize * fScale)
                                 ),
@@ -180,8 +150,8 @@ fun EditorScreen(
                     }
                 }
 
-                if (plane.value.isNotEmpty()) {
-                    plane.value.map { pixel ->
+                if (pixels.isNotEmpty()) {
+                    pixels.map { pixel ->
                         drawRect(
                             color = Color(pixel.color),
                             size = Size(

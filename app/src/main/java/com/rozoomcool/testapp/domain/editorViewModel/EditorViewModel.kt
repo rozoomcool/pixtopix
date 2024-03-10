@@ -1,9 +1,12 @@
 package com.rozoomcool.testapp.domain.editorViewModel
 
 import android.util.Log
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.rozoomcool.testapp.model.Pixel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EditorViewModel @Inject constructor(): ViewModel() {
+class EditorViewModel @Inject constructor() : ViewModel() {
 
     private val _state = MutableStateFlow<EditorState>(EditorState())
     val state: StateFlow<EditorState> = _state.asStateFlow()
@@ -24,17 +27,114 @@ class EditorViewModel @Inject constructor(): ViewModel() {
                     onCreate(event.title, event.width, event.height)
                 }
             }
+
+            is EditorEvent.DrawPixel -> {
+                viewModelScope.launch {
+                    onDrawPixel(event.x, event.y, event.size)
+                }
+            }
+
+            is EditorEvent.DrawLine -> {
+                viewModelScope.launch {
+                    onDrawLine(event.start, event.end, event.size)
+                }
+            }
         }
     }
 
     private fun onCreate(title: String, width: Int, height: Int) {
-            Log.d("@@@", "YES")
-            _state.value = _state.value.copy(
-                title = title,
+        Log.d("@@@", "YES")
+        _state.value = _state.value.copy(
+            title = title,
+            field = _state.value.field.copy(
                 width = width,
                 height = height
             )
-            Log.d("@@@", "${_state.value}")
+        )
+        Log.d("@@@", "${_state.value}")
+    }
+
+    private fun onDrawPixel(x: Float, y: Float, size: IntSize) {
+        val localPixelSize = size.width / _state.value.field.width
+
+        val cordX =
+            ((x - (x % localPixelSize)) / localPixelSize).toInt()
+        val cordY =
+            ((y - (y % localPixelSize)) / localPixelSize).toInt()
+
+        if (cordX !in 0..<_state.value.field.width && cordY !in 0..<_state.value.field.height) {
+            return
+        }
+
+        val newSet: MutableSet<Pixel> = _state.value.field.pixels.toMutableSet()
+        newSet.apply { add(Pixel(cordX, cordY, _state.value.currentColor)) }
+
+        _state.value = _state.value.copy(
+            field = _state.value.field.copy(
+                pixels = newSet.toSet()
+            )
+        )
+    }
+
+    private fun onDrawLine(start: Offset, end: Offset, size: IntSize) {
+        val localPixelSize = size.width / _state.value.field.width
+
+        val x0 = ((start.x - (start.x % localPixelSize)) / localPixelSize).toInt()
+        val x1 = ((end.x - (end.x % localPixelSize)) / localPixelSize).toInt()
+        val y0 = ((start.y - (start.y % localPixelSize)) / localPixelSize).toInt()
+        val y1 = ((end.y - (end.y % localPixelSize)) / localPixelSize).toInt()
+
+        val points = getPointsOnLine(x0, y0, x1, y1)
+        val newSet: MutableSet<Pixel> = _state.value.field.pixels.toMutableSet()
+        newSet.apply {
+            points.forEach {
+                add(Pixel(it.first, it.second, _state.value.currentColor))
+            }
+        }
+        _state.value = _state.value.copy(
+            field = _state.value.field.copy(
+                pixels = newSet.toSet()
+            )
+        )
+    }
+
+    private fun getPointsOnLine(x0: Int, y0: Int, x1: Int, y1: Int): Set<Pair<Int, Int>> {
+        val points = mutableSetOf<Pair<Int, Int>>()
+
+        var x = x0
+        var y = y0
+
+        val dx = kotlin.math.abs(x1 - x0)
+        val dy = kotlin.math.abs(y1 - y0)
+
+        val sx = if (x0 < x1) 1 else -1
+        val sy = if (y0 < y1) 1 else -1
+
+        var err = dx - dy
+
+        while (true) {
+            if (x in 0..<_state.value.field.width && y in 0..<_state.value.field.height) {
+                points.add(Pair(x, y))
+            }
+
+            if (x == x1 && y == y1) {
+                break
+            }
+
+            val e2 = 2 * err
+
+            if (e2 > -dy) {
+                err -= dy
+                x += sx
+            }
+
+            if (e2 < dx) {
+                err += dx
+                y += sy
+            }
+        }
+
+        return points
     }
 
 }

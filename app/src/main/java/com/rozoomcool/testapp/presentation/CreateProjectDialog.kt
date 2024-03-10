@@ -23,13 +23,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.rozoomcool.testapp.domain.editorViewModel.EditorEvent
+import com.rozoomcool.testapp.domain.editorViewModel.EditorState
 import com.rozoomcool.testapp.navigation.NavigationState
 import com.rozoomcool.testapp.navigation.Screen
 import com.rozoomcool.testapp.ui.compoents.CustomSingleFormTextField
 
 @Composable
 fun CreateProjectDialog(
-    navigationState: NavigationState
+    navigationState: NavigationState,
+    onEditorEvent: (EditorEvent) -> Unit
 ) {
 
     val title = remember { mutableStateOf("") }
@@ -125,13 +128,12 @@ fun CreateProjectDialog(
                     containerColor = colorScheme.secondaryContainer.copy(alpha = 0.7f)
                 ),
                 onClick = {
-                    navigationState.navigateTo(
-                        Screen.EditorProject.routeWithArgs(
-                            title.value,
-                            width.value.toInt(),
-                            height.value.toInt()
-                        )
-                    )
+                    onEditorEvent(EditorEvent.Create(
+                        title = title.value,
+                        width = width.value.toInt(),
+                        height = height.value.toInt()
+                    ))
+                    navigationState.navigateTo(Screen.EditorProject.route)
                 }) {
                 Text("Создать")
             }
