@@ -30,32 +30,38 @@ fun CanvasField(
     offsetFactor: Offset,
     onEditorEvent: (EditorEvent) -> Unit,
     pixelSize: Float,
-    zIndex: Float
+    zIndex: Float,
+    isSelectable: Boolean,
+    isDrawable: Boolean
 ) {
     Canvas(
         modifier = Modifier
-            .zIndex(zIndex)
+            .zIndex(1f)
             .fillMaxWidth()
             .height((pixelSize * rows).dp)
             .scale(scaleFactor)
             .offset(offsetFactor.x.dp, offsetFactor.y.dp)
-            .pointerInput(Unit) {
-                detectTapGestures { onTap ->
-                    onEditorEvent(EditorEvent.DrawPixel(onTap.x, onTap.y, size))
+            .pointerInput(isDrawable) {
+                if (isDrawable) {
+                    detectTapGestures { onTap ->
+                        onEditorEvent(EditorEvent.TapPixel(onTap.x, onTap.y, size))
+                    }
                 }
             }
-            .pointerInput(Unit) {
-                detectDragGestures(
-                    onDrag = { change, dragAmount ->
-                        onEditorEvent(
-                            EditorEvent.DrawLine(
-                                start = change.position - dragAmount,
-                                end = change.position,
-                                size
+            .pointerInput(isDrawable) {
+                if (isDrawable) {
+                    detectDragGestures(
+                        onDrag = { change, dragAmount ->
+                            onEditorEvent(
+                                EditorEvent.PanLine(
+                                    start = change.position - dragAmount,
+                                    end = change.position,
+                                    size
+                                )
                             )
-                        )
-                    }
-                )
+                        }
+                    )
+                }
             }
     ) {
         val pixelSize: Float = this.size.width / cols

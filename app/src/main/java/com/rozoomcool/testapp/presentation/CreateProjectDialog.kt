@@ -44,7 +44,9 @@ fun CreateProjectDialog(
     }
 
 
-    Dialog(onDismissRequest = {}) {
+    Dialog(onDismissRequest = {
+        navigationState.pop()
+    }) {
         // Draw a rectangle shape with rounded corners inside the dialog
         Column {
             Card(

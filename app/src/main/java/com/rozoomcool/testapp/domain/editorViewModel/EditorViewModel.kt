@@ -2,10 +2,10 @@ package com.rozoomcool.testapp.domain.editorViewModel
 
 import android.util.Log
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rozoomcool.testapp.model.EditorTool
 import com.rozoomcool.testapp.model.Pixel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,18 +28,30 @@ class EditorViewModel @Inject constructor() : ViewModel() {
                 }
             }
 
-            is EditorEvent.DrawPixel -> {
+            is EditorEvent.TapPixel -> {
                 viewModelScope.launch {
-                    onDrawPixel(event.x, event.y, event.size)
+                    onTapPixel(event.x, event.y, event.size)
                 }
             }
 
-            is EditorEvent.DrawLine -> {
+            is EditorEvent.PanLine -> {
                 viewModelScope.launch {
-                    onDrawLine(event.start, event.end, event.size)
+                    onPanLine(event.start, event.end, event.size)
+                }
+            }
+
+            is EditorEvent.ChangeTool -> {
+                viewModelScope.launch {
+                    onChangeTool(event.editorTool)
                 }
             }
         }
+    }
+
+    private fun onChangeTool(editorTool: EditorTool) {
+        _state.value = _state.value.copy(
+            editorTool = editorTool
+        )
     }
 
     private fun onCreate(title: String, width: Int, height: Int) {
@@ -54,7 +66,7 @@ class EditorViewModel @Inject constructor() : ViewModel() {
         Log.d("@@@", "${_state.value}")
     }
 
-    private fun onDrawPixel(x: Float, y: Float, size: IntSize) {
+    private fun onTapPixel(x: Float, y: Float, size: IntSize) {
         val localPixelSize = size.width / _state.value.field.width
 
         val cordX =
@@ -67,7 +79,21 @@ class EditorViewModel @Inject constructor() : ViewModel() {
         }
 
         val newSet: MutableSet<Pixel> = _state.value.field.pixels.toMutableSet()
-        newSet.apply { add(Pixel(cordX, cordY, _state.value.currentColor)) }
+
+        when (_state.value.editorTool) {
+            is EditorTool.Brush -> newSet.apply {
+                add(
+                    Pixel(
+                        cordX,
+                        cordY,
+                        _state.value.currentColor
+                    )
+                )
+            }
+
+            is EditorTool.Eraser -> newSet.apply { remove(Pixel(cordX, cordY, 0)) }
+            else -> {}
+        }
 
         _state.value = _state.value.copy(
             field = _state.value.field.copy(
@@ -76,7 +102,7 @@ class EditorViewModel @Inject constructor() : ViewModel() {
         )
     }
 
-    private fun onDrawLine(start: Offset, end: Offset, size: IntSize) {
+    private fun onPanLine(start: Offset, end: Offset, size: IntSize) {
         val localPixelSize = size.width / _state.value.field.width
 
         val x0 = ((start.x - (start.x % localPixelSize)) / localPixelSize).toInt()
@@ -86,11 +112,23 @@ class EditorViewModel @Inject constructor() : ViewModel() {
 
         val points = getPointsOnLine(x0, y0, x1, y1)
         val newSet: MutableSet<Pixel> = _state.value.field.pixels.toMutableSet()
-        newSet.apply {
-            points.forEach {
-                add(Pixel(it.first, it.second, _state.value.currentColor))
+
+        when (_state.value.editorTool) {
+            is EditorTool.Brush -> newSet.apply {
+                points.forEach {
+                    add(Pixel(it.first, it.second, _state.value.currentColor))
+                }
             }
+
+            is EditorTool.Eraser -> newSet.apply {
+                points.forEach {
+                    remove(Pixel(it.first, it.second, 0))
+                }
+            }
+
+            else -> {}
         }
+
         _state.value = _state.value.copy(
             field = _state.value.field.copy(
                 pixels = newSet.toSet()
@@ -103,31 +141,24 @@ class EditorViewModel @Inject constructor() : ViewModel() {
 
         var x = x0
         var y = y0
-
         val dx = kotlin.math.abs(x1 - x0)
         val dy = kotlin.math.abs(y1 - y0)
-
         val sx = if (x0 < x1) 1 else -1
         val sy = if (y0 < y1) 1 else -1
-
         var err = dx - dy
 
         while (true) {
             if (x in 0..<_state.value.field.width && y in 0..<_state.value.field.height) {
                 points.add(Pair(x, y))
             }
-
             if (x == x1 && y == y1) {
                 break
             }
-
             val e2 = 2 * err
-
             if (e2 > -dy) {
                 err -= dy
                 x += sx
             }
-
             if (e2 < dx) {
                 err += dx
                 y += sy
