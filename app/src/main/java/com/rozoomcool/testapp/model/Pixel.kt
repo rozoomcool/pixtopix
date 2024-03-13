@@ -20,6 +20,6 @@ data class Pixel(
     override fun hashCode(): Int {
         var result = x
         result = 31 * result + y
-        return result
+        return result * 29
     }
 }

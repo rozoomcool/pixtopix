@@ -30,4 +30,7 @@ sealed class EditorEvent {
     data class ChangeColor(
         val color: Long
     ): EditorEvent()
+
+    data object GetPalette: EditorEvent()
+    data class PickColor(val color: Long): EditorEvent()
 }

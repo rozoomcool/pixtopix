@@ -1,4 +1,4 @@
-package com.rozoomcool.testapp.ui.compoents
+package com.rozoomcool.testapp.presentation.editor
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

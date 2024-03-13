@@ -5,6 +5,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rozoomcool.testapp.data.shared.PaletteSharedRepository
 import com.rozoomcool.testapp.model.EditorTool
 import com.rozoomcool.testapp.model.Pixel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,10 +16,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EditorViewModel @Inject constructor() : ViewModel() {
+class EditorViewModel @Inject constructor(
+    private val paletteSharedRepository: PaletteSharedRepository
+) : ViewModel() {
 
-    private val _state = MutableStateFlow<EditorState>(EditorState())
+    private val _state = MutableStateFlow(EditorState())
     val state: StateFlow<EditorState> = _state.asStateFlow()
+
+    init {
+        onEvent(EditorEvent.GetPalette)
+    }
 
     fun onEvent(event: EditorEvent) {
         when (event) {
@@ -27,27 +34,57 @@ class EditorViewModel @Inject constructor() : ViewModel() {
                     onCreate(event.title, event.width, event.height)
                 }
             }
+
             is EditorEvent.TapPixel -> {
                 viewModelScope.launch {
                     onTapPixel(event.x, event.y, event.size)
                 }
             }
+
             is EditorEvent.PanLine -> {
                 viewModelScope.launch {
                     onPanLine(event.start, event.end, event.size)
                 }
             }
+
             is EditorEvent.ChangeTool -> {
                 viewModelScope.launch {
                     onChangeTool(event.editorTool)
                 }
             }
+
             is EditorEvent.ChangeColor -> {
                 viewModelScope.launch {
                     onChangeColor(event.color)
                 }
             }
+
+            is EditorEvent.GetPalette -> {
+                viewModelScope.launch {
+                    onGetPalette()
+                }
+            }
+
+            is EditorEvent.PickColor -> {
+                viewModelScope.launch {
+                    onPickColor(event.color)
+                }
+            }
         }
+    }
+
+    private fun onPickColor(color: Long) {
+        paletteSharedRepository.putColor(color)
+        _state.value = _state.value.copy(
+            currentColor = color
+        )
+    }
+
+    private fun onGetPalette() {
+        val colors = paletteSharedRepository.getColors()
+        _state.value = _state.value.copy(
+            palette = colors
+        )
     }
 
     private fun onChangeColor(color: Long) {
@@ -86,21 +123,14 @@ class EditorViewModel @Inject constructor() : ViewModel() {
             return
         }
 
-        val newSet: MutableSet<Pixel> = _state.value.field.pixels.toMutableSet()
+        val pixel = Pixel(cordX, cordY, _state.value.currentColor)
 
-        when (_state.value.editorTool) {
-            is EditorTool.Brush -> newSet.apply {
-                add(
-                    Pixel(
-                        cordX,
-                        cordY,
-                        _state.value.currentColor
-                    )
-                )
-            }
+        val newSet: MutableSet<Pixel> = when (_state.value.editorTool) {
+            is EditorTool.Brush -> ((_state.value.field.pixels - pixel) + pixel).toMutableSet()
 
-            is EditorTool.Eraser -> newSet.apply { remove(Pixel(cordX, cordY, 0)) }
-            else -> {}
+            is EditorTool.Eraser -> (_state.value.field.pixels - pixel).toMutableSet()
+
+            else -> mutableSetOf()
         }
 
         _state.value = _state.value.copy(
@@ -119,22 +149,13 @@ class EditorViewModel @Inject constructor() : ViewModel() {
         val y1 = ((end.y - (end.y % localPixelSize)) / localPixelSize).toInt()
 
         val points = getPointsOnLine(x0, y0, x1, y1)
-        val newSet: MutableSet<Pixel> = _state.value.field.pixels.toMutableSet()
 
-        when (_state.value.editorTool) {
-            is EditorTool.Brush -> newSet.apply {
-                points.forEach {
-                    add(Pixel(it.first, it.second, _state.value.currentColor))
-                }
-            }
+        val newSet: MutableSet<Pixel> = when (_state.value.editorTool) {
+            is EditorTool.Brush -> ((_state.value.field.pixels - points) + points).toMutableSet()
 
-            is EditorTool.Eraser -> newSet.apply {
-                points.forEach {
-                    remove(Pixel(it.first, it.second, 0))
-                }
-            }
+            is EditorTool.Eraser -> (_state.value.field.pixels - points).toMutableSet()
 
-            else -> {}
+            else -> mutableSetOf()
         }
 
         _state.value = _state.value.copy(
@@ -144,8 +165,8 @@ class EditorViewModel @Inject constructor() : ViewModel() {
         )
     }
 
-    private fun getPointsOnLine(x0: Int, y0: Int, x1: Int, y1: Int): Set<Pair<Int, Int>> {
-        val points = mutableSetOf<Pair<Int, Int>>()
+    private fun getPointsOnLine(x0: Int, y0: Int, x1: Int, y1: Int): Set<Pixel> {
+        val points = mutableSetOf<Pixel>()
 
         var x = x0
         var y = y0
@@ -157,7 +178,7 @@ class EditorViewModel @Inject constructor() : ViewModel() {
 
         while (true) {
             if (x in 0..<_state.value.field.width && y in 0..<_state.value.field.height) {
-                points.add(Pair(x, y))
+                points.add(Pixel(x, y, _state.value.currentColor))
             }
             if (x == x1 && y == y1) {
                 break

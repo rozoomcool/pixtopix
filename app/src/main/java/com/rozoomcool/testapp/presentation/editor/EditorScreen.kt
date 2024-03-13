@@ -26,14 +26,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.rozoomcool.testapp.domain.editorViewModel.EditorEvent
 import com.rozoomcool.testapp.domain.editorViewModel.EditorState
 import com.rozoomcool.testapp.model.DrawableTool
 import com.rozoomcool.testapp.model.SelectableTool
 import com.rozoomcool.testapp.model.mainTools
-import com.rozoomcool.testapp.ui.compoents.EditorBottomBar
-import com.rozoomcool.testapp.ui.compoents.EditorTopBar
 
 @SuppressLint("MutableCollectionMutableState", "CoroutineCreationDuringComposition")
 @Composable
@@ -75,11 +72,17 @@ fun EditorScreen(
             }
         },
         bottomBar = {
-            EditorBottomBar(
-                editorState = editorState,
-                mainTools = mainTools,
-                onEditorEvent = onEditorEvent
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom
+            ){
+                EditorBottomBar(
+                    editorState = editorState,
+                    mainTools = mainTools,
+                    onEditorEvent = onEditorEvent
+                )
+                EditorPaletteRail(palette = editorState.palette, onEditorEvent = onEditorEvent)
+            }
         }
     ) { paddingValues ->
         Log.d("@@@", "${editorState.editorTool is SelectableTool}")
