@@ -27,25 +27,33 @@ class EditorViewModel @Inject constructor() : ViewModel() {
                     onCreate(event.title, event.width, event.height)
                 }
             }
-
             is EditorEvent.TapPixel -> {
                 viewModelScope.launch {
                     onTapPixel(event.x, event.y, event.size)
                 }
             }
-
             is EditorEvent.PanLine -> {
                 viewModelScope.launch {
                     onPanLine(event.start, event.end, event.size)
                 }
             }
-
             is EditorEvent.ChangeTool -> {
                 viewModelScope.launch {
                     onChangeTool(event.editorTool)
                 }
             }
+            is EditorEvent.ChangeColor -> {
+                viewModelScope.launch {
+                    onChangeColor(event.color)
+                }
+            }
         }
+    }
+
+    private fun onChangeColor(color: Long) {
+        _state.value = _state.value.copy(
+            currentColor = color
+        )
     }
 
     private fun onChangeTool(editorTool: EditorTool) {

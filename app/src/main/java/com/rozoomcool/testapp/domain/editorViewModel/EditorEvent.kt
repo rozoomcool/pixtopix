@@ -26,4 +26,8 @@ sealed class EditorEvent {
     data class ChangeTool(
         val editorTool: EditorTool
     ): EditorEvent()
+
+    data class ChangeColor(
+        val color: Long
+    ): EditorEvent()
 }
