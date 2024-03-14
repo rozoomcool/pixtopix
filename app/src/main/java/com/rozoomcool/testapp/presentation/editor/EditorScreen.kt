@@ -42,7 +42,7 @@ fun EditorScreen(
     val rows = editorState.field.height
     val cols = editorState.field.width
 
-    val pixels = editorState.field.pixels
+    val pixels = editorState.getField()
 
     var scaleFactor by remember {
         mutableFloatStateOf(1f)
@@ -58,7 +58,14 @@ fun EditorScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-                EditorTopBar(editorState.title)
+                EditorTopBar(
+                    editorState.title,
+                    onMenuClickListener = {},
+                    onBackClickListener = { onEditorEvent(EditorEvent.BackStep) },
+                    onForwardClickListener = {},
+                    onSaveAsClickListener = {},
+                    onSaveClickListener = {}
+                )
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -75,7 +82,7 @@ fun EditorScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom
-            ){
+            ) {
                 EditorBottomBar(
                     editorState = editorState,
                     mainTools = mainTools,
@@ -106,7 +113,7 @@ fun EditorScreen(
             CanvasField(
                 cols = cols,
                 rows = rows,
-                pixels = pixels,
+                pixels = editorState.getField(),
                 scaleFactor = scaleFactor,
                 offsetFactor = offsetFactor,
                 onEditorEvent = onEditorEvent,

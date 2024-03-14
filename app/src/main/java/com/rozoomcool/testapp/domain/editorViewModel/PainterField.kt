@@ -6,6 +6,5 @@ import com.rozoomcool.testapp.model.Pixel
 data class PainterField(
     val width: Int = 1,
     val height: Int = 1,
-    val selected: Pair<Int, Int> = Pair(width, height),
-    val pixels: Set<Pixel> = setOf()
+    val selected: Pair<Int, Int> = Pair(width, height)
 )

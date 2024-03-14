@@ -25,7 +25,7 @@ import com.rozoomcool.testapp.model.Pixel
 fun CanvasField(
     cols: Int,
     rows: Int,
-    pixels: Set<Pixel>,
+    pixels: List<Pixel>,
     scaleFactor: Float,
     offsetFactor: Offset,
     onEditorEvent: (EditorEvent) -> Unit,

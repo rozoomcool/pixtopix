@@ -31,6 +31,9 @@ sealed class EditorEvent {
         val color: Long
     ): EditorEvent()
 
+    data object BackStep: EditorEvent()
+    data object ForwardStep: EditorEvent()
+
     data object GetPalette: EditorEvent()
     data class PickColor(val color: Long): EditorEvent()
 }

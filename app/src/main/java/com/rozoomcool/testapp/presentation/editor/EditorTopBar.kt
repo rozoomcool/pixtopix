@@ -24,7 +24,14 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditorTopBar(title: String = "") {
+fun EditorTopBar(
+    title: String = "",
+    onMenuClickListener: () -> Unit,
+    onBackClickListener: () -> Unit,
+    onForwardClickListener: () -> Unit,
+    onSaveAsClickListener: () -> Unit,
+    onSaveClickListener: () -> Unit,
+) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -41,12 +48,12 @@ fun EditorTopBar(title: String = "") {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { onMenuClickListener()},
                 ) {
                     Icon(imageVector = Icons.Rounded.Menu, contentDescription = null)
                 }
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { onBackClickListener() },
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.ArrowBackIosNew,
@@ -54,7 +61,7 @@ fun EditorTopBar(title: String = "") {
                     )
                 }
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { onForwardClickListener() },
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowForwardIos,
@@ -65,12 +72,12 @@ fun EditorTopBar(title: String = "") {
         },
         actions = {
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { onSaveAsClickListener() },
             ) {
                 Icon(imageVector = Icons.Rounded.SaveAs, contentDescription = null)
             }
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { onSaveClickListener() },
             ) {
                 Icon(imageVector = Icons.Rounded.Save, contentDescription = null)
             }

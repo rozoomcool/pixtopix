@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rozoomcool.testapp.data.shared.PaletteSharedRepository
+import com.rozoomcool.testapp.model.Action
 import com.rozoomcool.testapp.model.EditorTool
 import com.rozoomcool.testapp.model.Pixel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -70,7 +71,37 @@ class EditorViewModel @Inject constructor(
                     onPickColor(event.color)
                 }
             }
+
+            is EditorEvent.BackStep -> {
+                viewModelScope.launch {
+                    onBackStep()
+                }
+            }
+
+            is EditorEvent.ForwardStep -> {
+                viewModelScope.launch {
+                }
+            }
         }
+    }
+
+    private fun onBackStep() {
+        var currentStep = _state.value.fieldStack.currentStep
+        if (currentStep > 0) currentStep -= 1
+
+        val actions: MutableList<Action> = _state.value.fieldStack.actions.toMutableList()
+        if (actions.size - currentStep > 5) {
+            actions.apply {
+                this.removeLast()
+            }
+        }
+
+        _state.value = _state.value.copy(
+            fieldStack = _state.value.fieldStack.copy(
+                currentStep = currentStep,
+                actions = actions
+            )
+        )
     }
 
     private fun onPickColor(color: Long) {
@@ -124,18 +155,29 @@ class EditorViewModel @Inject constructor(
         }
 
         val pixel = Pixel(cordX, cordY, _state.value.currentColor)
+        val newPixels: MutableList<Pixel> =
+            mutableListOf<Pixel>().apply { addAll(_state.value.getField()) }
 
-        val newSet: MutableSet<Pixel> = when (_state.value.editorTool) {
-            is EditorTool.Brush -> ((_state.value.field.pixels - pixel) + pixel).toMutableSet()
+        when (_state.value.editorTool) {
+            is EditorTool.Brush -> newPixels.apply {
+                remove(pixel)
+                add(pixel)
+            }
 
-            is EditorTool.Eraser -> (_state.value.field.pixels - pixel).toMutableSet()
+            is EditorTool.Eraser -> newPixels.apply { remove(pixel); }
 
             else -> mutableSetOf()
         }
 
         _state.value = _state.value.copy(
-            field = _state.value.field.copy(
-                pixels = newSet.toSet()
+            fieldStack = _state.value.fieldStack.copy(
+                actions = _state.value.fieldStack.actions.subList(
+                    0,
+                    _state.value.fieldStack.currentStep
+                ).toMutableList().apply {
+                    add(Action(pixels = newPixels))
+                },
+                currentStep = _state.value.fieldStack.currentStep + 1
             )
         )
     }
@@ -149,18 +191,29 @@ class EditorViewModel @Inject constructor(
         val y1 = ((end.y - (end.y % localPixelSize)) / localPixelSize).toInt()
 
         val points = getPointsOnLine(x0, y0, x1, y1)
+        val newPixels: MutableList<Pixel> =
+            mutableListOf<Pixel>().apply { addAll(_state.value.getField()) }
 
-        val newSet: MutableSet<Pixel> = when (_state.value.editorTool) {
-            is EditorTool.Brush -> ((_state.value.field.pixels - points) + points).toMutableSet()
+        when (_state.value.editorTool) {
+            is EditorTool.Brush -> newPixels.apply {
+                removeAll(points)
+                addAll(points)
+            }
 
-            is EditorTool.Eraser -> (_state.value.field.pixels - points).toMutableSet()
+            is EditorTool.Eraser -> newPixels.apply { removeAll(points) }
 
             else -> mutableSetOf()
         }
 
         _state.value = _state.value.copy(
-            field = _state.value.field.copy(
-                pixels = newSet.toSet()
+            fieldStack = _state.value.fieldStack.copy(
+                actions = _state.value.fieldStack.actions.subList(
+                    0,
+                    _state.value.fieldStack.currentStep
+                ).toMutableList().apply {
+                    add(Action(pixels = newPixels))
+                },
+                currentStep = _state.value.fieldStack.currentStep + 1
             )
         )
     }
