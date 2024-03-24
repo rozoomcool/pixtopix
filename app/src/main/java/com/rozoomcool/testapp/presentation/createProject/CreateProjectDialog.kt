@@ -1,4 +1,4 @@
-package com.rozoomcool.testapp.presentation
+package com.rozoomcool.testapp.presentation.createProject
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,8 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.core.text.isDigitsOnly
 import com.rozoomcool.testapp.domain.editorViewModel.EditorEvent
-import com.rozoomcool.testapp.domain.editorViewModel.EditorState
 import com.rozoomcool.testapp.navigation.NavigationState
 import com.rozoomcool.testapp.navigation.Screen
 import com.rozoomcool.testapp.ui.compoents.CustomSingleFormTextField
@@ -34,6 +34,9 @@ fun CreateProjectDialog(
     navigationState: NavigationState,
     onEditorEvent: (EditorEvent) -> Unit
 ) {
+
+    val titleValidator = fun(value: String): Boolean = value.isNotEmpty()
+    val valValidator = fun(value: String): Boolean = value.isNotEmpty() && value.isDigitsOnly()
 
     val title = remember { mutableStateOf("") }
     val width = remember {
@@ -71,7 +74,8 @@ fun CreateProjectDialog(
                     CustomSingleFormTextField(
                         value = title.value,
                         onValueChanged = { title.value = it },
-                        label = "Название"
+                        label = "Название",
+                        validator = titleValidator
                     )
                     Spacer(Modifier.height(12.dp))
                     Row(
@@ -95,7 +99,8 @@ fun CreateProjectDialog(
                             ) {
                                 CustomSingleFormTextField(
                                     value = height.value,
-                                    onValueChanged = { height.value = it }
+                                    onValueChanged = { height.value = it },
+                                    validator = valValidator
                                 )
                             }
                             Text(
@@ -109,7 +114,8 @@ fun CreateProjectDialog(
                             ) {
                                 CustomSingleFormTextField(
                                     value = width.value,
-                                    onValueChanged = { width.value = it }
+                                    onValueChanged = { width.value = it },
+                                    validator = valValidator
                                 )
                             }
                         }
@@ -130,12 +136,19 @@ fun CreateProjectDialog(
                     containerColor = colorScheme.secondaryContainer.copy(alpha = 0.7f)
                 ),
                 onClick = {
-                    onEditorEvent(EditorEvent.Create(
-                        title = title.value,
-                        width = width.value.toInt(),
-                        height = height.value.toInt()
-                    ))
-                    navigationState.navigateTo(Screen.EditorProject.route)
+                    if (titleValidator(title.value) && valValidator(width.value) && valValidator(
+                            height.value
+                        )
+                    ) {
+                        onEditorEvent(
+                            EditorEvent.Create(
+                                title = title.value,
+                                width = width.value.toInt(),
+                                height = height.value.toInt()
+                            )
+                        )
+                        navigationState.navigateTo(Screen.EditorProject.route)
+                    }
                 }) {
                 Text("Создать")
             }

@@ -1,5 +1,6 @@
 package com.rozoomcool.testapp.presentation.editor
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -25,7 +26,7 @@ import com.rozoomcool.testapp.model.Pixel
 fun CanvasField(
     cols: Int,
     rows: Int,
-    pixels: List<Pixel>,
+    pixels: Set<Pixel>,
     scaleFactor: Float,
     offsetFactor: Offset,
     onEditorEvent: (EditorEvent) -> Unit,
@@ -34,6 +35,7 @@ fun CanvasField(
     isSelectable: Boolean,
     isDrawable: Boolean
 ) {
+
     Canvas(
         modifier = Modifier
             .zIndex(1f)
@@ -59,6 +61,9 @@ fun CanvasField(
                                     size
                                 )
                             )
+                        },
+                        onDragEnd = {
+//                            onEditorEvent(EditorEvent.ActionEnd)
                         }
                     )
                 }

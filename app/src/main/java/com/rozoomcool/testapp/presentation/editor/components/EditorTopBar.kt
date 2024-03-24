@@ -1,4 +1,4 @@
-package com.rozoomcool.testapp.presentation.editor
+package com.rozoomcool.testapp.presentation.editor.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -9,6 +9,8 @@ import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material.icons.rounded.SaveAs
+import androidx.compose.material.icons.rounded.TurnLeft
+import androidx.compose.material.icons.rounded.TurnRight
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,9 +28,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun EditorTopBar(
     title: String = "",
-    onMenuClickListener: () -> Unit,
     onBackClickListener: () -> Unit,
-    onForwardClickListener: () -> Unit,
+    onBackStepClickListener: () -> Unit,
+    onForwardStepClickListener: () -> Unit,
     onSaveAsClickListener: () -> Unit,
     onSaveClickListener: () -> Unit,
 ) {
@@ -48,23 +50,23 @@ fun EditorTopBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
-                    onClick = { onMenuClickListener()},
+                    onClick = { onBackClickListener()},
                 ) {
-                    Icon(imageVector = Icons.Rounded.Menu, contentDescription = null)
+                    Icon(imageVector = Icons.Rounded.ArrowBackIosNew, contentDescription = null)
                 }
                 IconButton(
-                    onClick = { onBackClickListener() },
+                    onClick = { onBackStepClickListener() },
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.ArrowBackIosNew,
+                        imageVector = Icons.Rounded.TurnLeft,
                         contentDescription = null
                     )
                 }
                 IconButton(
-                    onClick = { onForwardClickListener() },
+                    onClick = { onForwardStepClickListener() },
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowForwardIos,
+                        imageVector = Icons.Rounded.TurnRight,
                         contentDescription = null
                     )
                 }

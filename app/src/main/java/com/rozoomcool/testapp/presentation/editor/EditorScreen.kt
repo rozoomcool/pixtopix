@@ -1,7 +1,6 @@
 package com.rozoomcool.testapp.presentation.editor
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
@@ -31,18 +32,22 @@ import com.rozoomcool.testapp.domain.editorViewModel.EditorState
 import com.rozoomcool.testapp.model.DrawableTool
 import com.rozoomcool.testapp.model.SelectableTool
 import com.rozoomcool.testapp.model.mainTools
+import com.rozoomcool.testapp.presentation.editor.components.EditorBottomBar
+import com.rozoomcool.testapp.presentation.editor.components.EditorPaletteRail
+import com.rozoomcool.testapp.presentation.editor.components.EditorTopBar
+import kotlinx.coroutines.flow.flowOf
 
 @SuppressLint("MutableCollectionMutableState", "CoroutineCreationDuringComposition")
 @Composable
 fun EditorScreen(
     editorState: EditorState,
-    onEditorEvent: (EditorEvent) -> Unit
+    onEditorEvent: (EditorEvent) -> Unit,
+    onBackButtonClick: () -> Unit
 ) {
 
-    val rows = editorState.field.height
-    val cols = editorState.field.width
-
-    val pixels = editorState.getField()
+    if (editorState.field == null) {
+        onBackButtonClick()
+    }
 
     var scaleFactor by remember {
         mutableFloatStateOf(1f)
@@ -60,9 +65,9 @@ fun EditorScreen(
             ) {
                 EditorTopBar(
                     editorState.title,
-                    onMenuClickListener = {},
-                    onBackClickListener = { onEditorEvent(EditorEvent.BackStep) },
-                    onForwardClickListener = {},
+                    onBackClickListener = {onBackButtonClick()},
+                    onBackStepClickListener = { onEditorEvent(EditorEvent.BackStep) },
+                    onForwardStepClickListener = {},
                     onSaveAsClickListener = {},
                     onSaveClickListener = {}
                 )
@@ -80,19 +85,19 @@ fun EditorScreen(
         },
         bottomBar = {
             Column(
+                modifier = Modifier.height(112.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom
             ) {
+                SubToolsBar(editorState = editorState, onEditorEvent = onEditorEvent)
                 EditorBottomBar(
                     editorState = editorState,
                     mainTools = mainTools,
                     onEditorEvent = onEditorEvent
                 )
-                EditorPaletteRail(palette = editorState.palette, onEditorEvent = onEditorEvent)
             }
         }
     ) { paddingValues ->
-        Log.d("@@@", "${editorState.editorTool is SelectableTool}")
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -109,11 +114,15 @@ fun EditorScreen(
                 }
         ) {
 
+            val rows = editorState.field!!.height
+            val cols = editorState.field.width
             val pixelSize: Float = (LocalConfiguration.current.screenWidthDp / cols).toFloat()
+            val pixels = editorState.field.pixels()
+
             CanvasField(
                 cols = cols,
                 rows = rows,
-                pixels = editorState.getField(),
+                pixels = pixels,
                 scaleFactor = scaleFactor,
                 offsetFactor = offsetFactor,
                 onEditorEvent = onEditorEvent,

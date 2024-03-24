@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.navigation
 import com.rozoomcool.testapp.domain.editorViewModel.EditorViewModel
-import com.rozoomcool.testapp.presentation.CreateProjectDialog
+import com.rozoomcool.testapp.presentation.createProject.CreateProjectDialog
 import com.rozoomcool.testapp.presentation.editor.EditorScreen
 
 fun NavGraphBuilder.editorNavGraph(
@@ -35,11 +35,12 @@ fun NavGraphBuilder.editorNavGraph(
             val editorViewModel = entry.sharedViewModel<EditorViewModel>(navController = navigationState.navHostController)
             val editorState = editorViewModel.state.collectAsState().value
 
-            Log.d("===", "editor ${editorViewModel.hashCode()} | ${editorState}")
-
             EditorScreen(
                 editorState = editorState,
-                onEditorEvent = editorViewModel::onEvent
+                onEditorEvent = editorViewModel::onEvent,
+                onBackButtonClick = {
+                    navigationState.pop()
+                }
             )
         }
     }

@@ -14,6 +14,8 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,8 +29,13 @@ import androidx.compose.ui.unit.sp
 fun CustomSingleFormTextField(
     value: String,
     onValueChanged: (String) -> Unit,
-    label: String = ""
-) {
+    label: String = "",
+    validator: (String) -> Boolean = fun(_: String) = true,
+
+    ) {
+    val isError = remember {
+        mutableStateOf(false)
+    }
     val textStyle = LocalTextStyle.current.copy(
         color = colorScheme.onSurface
     )
@@ -36,9 +43,13 @@ fun CustomSingleFormTextField(
     BasicTextField(modifier = Modifier
         .fillMaxWidth()
         .clip(RoundedCornerShape(6.dp))
-        .background(colorScheme.background),
+        .background(colorScheme.background)
+        .border(width = 2.dp, if (isError.value) colorScheme.error else Color.Transparent),
         value = value,
-        onValueChange = onValueChanged,
+        onValueChange = {
+            onValueChanged(it)
+            isError.value = !validator(it)
+        },
         textStyle = textStyle,
         cursorBrush = SolidColor(colorScheme.primary),
         singleLine = true,

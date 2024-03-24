@@ -49,7 +49,5 @@ inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(navControll
         navController.getBackStackEntry(navGraphRoute)
     }
 
-    Log.d("@@@nav", "${parentEntry.destination.route}")
-
     return hiltViewModel<T>(parentEntry)
 }
