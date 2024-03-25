@@ -1,5 +1,6 @@
 package com.rozoomcool.testapp.domain.editorViewModel
 
+import android.util.Log
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.ViewModel
@@ -84,6 +85,7 @@ class EditorViewModel @Inject constructor(
 
             is EditorEvent.ActionEnd -> {
                 viewModelScope.launch {
+                    onActionEnd()
                 }
             }
         }
@@ -221,19 +223,15 @@ class EditorViewModel @Inject constructor(
 
     }
 
-    private fun addPixels(newPixels: Collection<Pixel>) {
+    private fun addPixels(newPixels: MutableSet<Pixel>) {
         val actions: MutableList<EditorState.PainterField.Action> =
             _state.value.field!!.actions.toMutableList()
-        val newActionsValue = if (actions.isEmpty())
+        val newActionsValue = if (actions.isEmpty()) {
             listOf(EditorState.PainterField.Action(newPixels.toMutableSet()))
-        else {
-            val newPixelsValue = actions.last().pixels + newPixels
-            actions.mapIndexed { i, it ->
-                if (i == actions.size - 1) {
-                    EditorState.PainterField.Action(newPixelsValue)
-                }
-                it
-            }
+        } else {
+            newPixels.apply { addAll(actions.last().pixels) }
+            actions[actions.size - 1] = EditorState.PainterField.Action(newPixels)
+            actions
         }
 
         _state.value = _state.value.copy(

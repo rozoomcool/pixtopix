@@ -1,6 +1,7 @@
 package com.rozoomcool.testapp.presentation.editor
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -117,12 +118,12 @@ fun EditorScreen(
             val rows = editorState.field!!.height
             val cols = editorState.field.width
             val pixelSize: Float = (LocalConfiguration.current.screenWidthDp / cols).toFloat()
-            val pixels = editorState.field.pixels()
+            val field = editorState.field
 
             CanvasField(
                 cols = cols,
                 rows = rows,
-                pixels = pixels,
+                pixels = field.pixels(),
                 scaleFactor = scaleFactor,
                 offsetFactor = offsetFactor,
                 onEditorEvent = onEditorEvent,

@@ -63,7 +63,7 @@ fun CanvasField(
                             )
                         },
                         onDragEnd = {
-//                            onEditorEvent(EditorEvent.ActionEnd)
+                            onEditorEvent(EditorEvent.ActionEnd)
                         }
                     )
                 }
