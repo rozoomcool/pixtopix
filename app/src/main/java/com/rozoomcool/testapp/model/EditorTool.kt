@@ -40,7 +40,9 @@ sealed class EditorTool(
 }
 
 sealed class SubTool {
-
+    data object ColorPicker: SubTool()
+    data object SetSize: SubTool()
+    data object BackStep
 }
 
 val mainTools = listOf(

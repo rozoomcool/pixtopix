@@ -1,6 +1,5 @@
 package com.rozoomcool.testapp.domain.editorViewModel
 
-import android.util.Log
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.ViewModel
@@ -83,15 +82,15 @@ class EditorViewModel @Inject constructor(
                 }
             }
 
-            is EditorEvent.ActionEnd -> {
+            is EditorEvent.ActionStart -> {
                 viewModelScope.launch {
-                    onActionEnd()
+                    onActionStart()
                 }
             }
         }
     }
 
-    private fun onActionEnd() {
+    private fun onActionStart() {
         _state.value = _state.value.copy(
             field = _state.value.field!!.copy(
                 actions = _state.value.field!!.actions.toMutableList().apply {
@@ -122,6 +121,9 @@ class EditorViewModel @Inject constructor(
             _state.value = _state.value.copy(
                 field = _state.value.field!!.copy(
                     actions = _state.value.field!!.actions.toMutableList().apply {
+//                        if(last().pixels.isEmpty()) {
+//                            removeLast()
+//                        }
                         removeLast()
                     }
                 )
@@ -210,17 +212,28 @@ class EditorViewModel @Inject constructor(
 
         when (_state.value.editorTool) {
             is EditorTool.Brush -> newPixels.apply {
-                removeAll(points)
                 addAll(points)
+                addPixels(newPixels)
             }
 
-            is EditorTool.Eraser -> newPixels.apply { removeAll(points) }
+            is EditorTool.Eraser -> removePixels(points)
 
-            else -> mutableSetOf()
+            else -> {}
         }
 
-        addPixels(newPixels)
 
+    }
+
+    private fun removePixels(points: Set<Pixel>) {
+        val actions = _state.value.field!!.actions.toMutableList()
+        for (i in actions.indices){
+            actions[i] = EditorState.PainterField.Action(actions[i].pixels - points)
+        }
+        _state.value = _state.value.copy(
+            field = _state.value.field!!.copy(
+                actions = actions
+            )
+        )
     }
 
     private fun addPixels(newPixels: MutableSet<Pixel>) {
