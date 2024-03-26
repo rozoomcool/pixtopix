@@ -54,22 +54,6 @@ fun EditorTopBar(
                 ) {
                     Icon(imageVector = Icons.Rounded.ArrowBackIosNew, contentDescription = null)
                 }
-                IconButton(
-                    onClick = { onBackStepClickListener() },
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.TurnLeft,
-                        contentDescription = null
-                    )
-                }
-                IconButton(
-                    onClick = { onForwardStepClickListener() },
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.TurnRight,
-                        contentDescription = null
-                    )
-                }
             }
         },
         actions = {

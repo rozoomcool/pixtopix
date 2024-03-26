@@ -22,7 +22,11 @@ sealed class EditorTool(
     data object Move: EditorTool(R.drawable.move), SelectableTool
     data class Brush(
         val size: Int = 1
-    ): EditorTool(R.drawable.brush), DrawableTool
+    ): EditorTool(R.drawable.brush), DrawableTool, ExtendedTool {
+        override fun getSubTools(): List<SubTool> {
+            return listOf<SubTool>(SubTool.ColorPicker, SubTool.SetSize)
+        }
+    }
     data object Select: EditorTool(R.drawable.select), SelectableTool
 //    data object Dimmer: EditorTool(Icons.Rounded.DarkMode), DrawableTool
 //    data object Fill: EditorTool(Icons.Rounded.FormatColorFill), DrawableTool
@@ -31,7 +35,11 @@ sealed class EditorTool(
     ): EditorTool(R.drawable.pipette), DrawableTool
     data class Eraser(
         val size: Int = 1
-    ): EditorTool(R.drawable.eraser), DrawableTool
+    ): EditorTool(R.drawable.eraser), DrawableTool, ExtendedTool {
+        override fun getSubTools(): List<SubTool> {
+            return listOf<SubTool>(SubTool.SetSize)
+        }
+    }
     object Palette: EditorTool(R.drawable.palette), ExtendedTool {
         override fun getSubTools(): List<SubTool> {
             return listOf<SubTool>()
@@ -42,7 +50,6 @@ sealed class EditorTool(
 sealed class SubTool {
     data object ColorPicker: SubTool()
     data object SetSize: SubTool()
-    data object BackStep
 }
 
 val mainTools = listOf(

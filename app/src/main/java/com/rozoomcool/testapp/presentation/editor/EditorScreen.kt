@@ -90,7 +90,12 @@ fun EditorScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom
             ) {
-                SubToolsBar(editorState = editorState, onEditorEvent = onEditorEvent)
+                SubToolsBar(
+                    editorState = editorState,
+                    onEditorEvent = onEditorEvent,
+                    onBackStepClickListener = {},
+                    onForwardStepClickListener = {}
+                )
                 EditorBottomBar(
                     editorState = editorState,
                     mainTools = mainTools,
