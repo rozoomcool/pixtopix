@@ -67,8 +67,6 @@ fun EditorScreen(
                 EditorTopBar(
                     editorState.title,
                     onBackClickListener = {onBackButtonClick()},
-                    onBackStepClickListener = { onEditorEvent(EditorEvent.BackStep) },
-                    onForwardStepClickListener = {},
                     onSaveAsClickListener = {},
                     onSaveClickListener = {}
                 )
@@ -93,8 +91,8 @@ fun EditorScreen(
                 SubToolsBar(
                     editorState = editorState,
                     onEditorEvent = onEditorEvent,
-                    onBackStepClickListener = {},
-                    onForwardStepClickListener = {}
+                    onBackStepClickListener = { onEditorEvent(EditorEvent.BackStep) },
+                    onForwardStepClickListener = {},
                 )
                 EditorBottomBar(
                     editorState = editorState,

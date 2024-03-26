@@ -29,8 +29,6 @@ import androidx.compose.ui.unit.dp
 fun EditorTopBar(
     title: String = "",
     onBackClickListener: () -> Unit,
-    onBackStepClickListener: () -> Unit,
-    onForwardStepClickListener: () -> Unit,
     onSaveAsClickListener: () -> Unit,
     onSaveClickListener: () -> Unit,
 ) {

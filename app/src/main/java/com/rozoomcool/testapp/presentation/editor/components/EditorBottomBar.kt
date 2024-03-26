@@ -39,7 +39,7 @@ fun EditorBottomBar(
             .fillMaxWidth()
             .padding(8.dp)
             .horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.Start,
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(modifier = Modifier.width(8.dp))
