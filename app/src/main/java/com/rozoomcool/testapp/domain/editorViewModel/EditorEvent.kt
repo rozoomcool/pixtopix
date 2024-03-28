@@ -14,13 +14,13 @@ sealed class EditorEvent {
     data class TapPixel(
         val x: Float,
         val y: Float,
-        val width: Int
+        val width: Float
     ): EditorEvent()
 
     data class PanLine(
         val start: Offset,
         val end: Offset,
-        val width: Int
+        val width: Float
     ): EditorEvent()
 
     data class ChangeTool(

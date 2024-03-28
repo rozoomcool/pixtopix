@@ -122,9 +122,12 @@ fun EditorScreen(
 
             val rows = editorState.field!!.height
             val cols = editorState.field.width
-            val width = LocalView.current.width
-            val pixelSize: Float = (width / cols).toFloat()
+            val width: Float = LocalConfiguration.current.screenWidthDp.dp.value
+            val pixelSize: Float = width / cols.toFloat()
+            val height: Float = pixelSize * rows.toFloat()
             val field = editorState.field
+
+            Log.d("===width", "$width")
 
             CanvasField(
                 cols = cols,
@@ -134,7 +137,8 @@ fun EditorScreen(
                 offsetFactor = offsetFactor,
                 onEditorEvent = onEditorEvent,
                 width = width,
-                pixelSize = pixelSize,
+                height = height,
+                pixelSize = (width / cols.toFloat()).dp.toPx(),
                 zIndex = 1f,
                 isSelectable = editorState.editorTool is SelectableTool,
                 isDrawable = editorState.editorTool is DrawableTool

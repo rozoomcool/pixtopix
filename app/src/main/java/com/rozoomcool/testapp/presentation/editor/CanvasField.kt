@@ -27,7 +27,9 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -43,7 +45,8 @@ fun CanvasField(
     scaleFactor: Float,
     offsetFactor: Offset,
     onEditorEvent: (EditorEvent) -> Unit,
-    width: Int,
+    width: Float,
+    height: Float,
     pixelSize: Float,
     zIndex: Float,
     isSelectable: Boolean,
@@ -52,9 +55,8 @@ fun CanvasField(
 
     Canvas(
         modifier = Modifier
-            .zIndex(1f)
             .width(width.dp)
-            .height((pixelSize * rows).dp)
+            .height(height.dp)
             .scale(scaleFactor)
             .offset(offsetFactor.x.dp, offsetFactor.y.dp)
             .background(Color.Red)
@@ -62,7 +64,7 @@ fun CanvasField(
                 if (isDrawable) {
                     detectTapGestures { onTap ->
                         Log.d("===", "${onTap.x} ${onTap.y}")
-                        onEditorEvent(EditorEvent.TapPixel(onTap.x, onTap.y, width))
+                        onEditorEvent(EditorEvent.TapPixel(onTap.x, onTap.y, width.dp.toPx()))
                     }
                 }
             }
@@ -74,7 +76,7 @@ fun CanvasField(
                                 EditorEvent.PanLine(
                                     start = change.position - dragAmount,
                                     end = change.position,
-                                    width = width
+                                    width = width.dp.toPx()
                                 )
                             )
                         },
@@ -86,7 +88,7 @@ fun CanvasField(
             }
     ) {
 //        val pixelSize: Float = this.size.width / cols
-
+        Log.d("===size", "${size.width}")
         drawBackgroundLines(cols, rows, pixelSize)
 
 
@@ -94,30 +96,6 @@ fun CanvasField(
             drawModifiedPixels(pixels, pixelSize)
         }
     }
-}
-
-private fun getBackGroundBitmap(
-    width: Int,
-    height: Int,
-    canvasWidth: Int
-): ImageBitmap {
-    val bitmap = Bitmap.createBitmap(
-        ((canvasWidth / width) * width).toInt(),
-        ((canvasWidth / width) * height).toInt(),
-        Bitmap.Config.RGB_565
-    )
-
-    for (i in 0 until width) {
-        for (j in 0 until height) {
-            bitmap.setPixel(
-                i,
-                j,
-                if ((i + j) % 2 == 0) Color.White.hashCode() else Color(0xFFAAAAAA).hashCode()
-            )
-        }
-    }
-
-    return bitmap.asImageBitmap()
 }
 
 private fun DrawScope.drawBackground(cols: Int, rows: Int, pixelSize: Float) {
@@ -151,8 +129,8 @@ private fun DrawScope.drawBackgroundLines(cols: Int, rows: Int, pixelSize: Float
     for (i in 0 until (rows / fScale) + 1) {
         drawLine(
             color = Color(0xFF3D3D3D),
-            start = Offset(0f, pixelSize * i * fScale),
-            end = Offset(pixelSize * cols, pixelSize * i * fScale),
+            start = Offset(0f, (pixelSize * i) * fScale),
+            end = Offset(pixelSize * cols, (pixelSize * i) * fScale),
             strokeWidth = 2f
         )
     }
@@ -160,8 +138,8 @@ private fun DrawScope.drawBackgroundLines(cols: Int, rows: Int, pixelSize: Float
     for (j in 0 until (cols / fScale) + 1) {
         drawLine(
             color = Color(0xFF3D3D3D),
-            start = Offset(pixelSize * j * fScale, 0f),
-            end = Offset(pixelSize * j * fScale, pixelSize * rows),
+            start = Offset((pixelSize * j) * fScale, 0f),
+            end = Offset((pixelSize * j) * fScale, pixelSize * rows),
             strokeWidth = 2f
         )
     }
@@ -177,4 +155,14 @@ private fun DrawScope.drawModifiedPixels(pixels: Set<Pixel>, pixelSize: Float) {
             )
         }
     }
+}
+
+@Composable
+fun Dp.toPx() = with(LocalDensity.current) {
+    this@toPx.toPx()
+}
+
+@Composable
+fun convertDpToPx(dp: Dp): Float {
+    return LocalDensity.current.density * dp.value
 }
