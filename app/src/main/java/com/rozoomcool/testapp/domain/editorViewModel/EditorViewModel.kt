@@ -192,16 +192,14 @@ class EditorViewModel @Inject constructor(
 
         when (_state.value.editorTool) {
             is EditorTool.Brush -> newPixels.apply {
-                remove(pixel)
-                add(pixel)
+                addAll(setOf(pixel))
+                addPixels(newPixels)
             }
 
-            is EditorTool.Eraser -> newPixels.apply { remove(pixel); }
+            is EditorTool.Eraser -> removePixels(setOf(pixel))
 
-            else -> mutableSetOf()
+            else -> {}
         }
-
-        addPixels(newPixels)
     }
 
     private fun onPanLine(start: Offset, end: Offset, width: Float) {
@@ -232,9 +230,7 @@ class EditorViewModel @Inject constructor(
 
     private fun removePixels(points: Set<Pixel>) {
         val actions = _state.value.field!!.actions.toMutableList()
-        for (i in actions.indices){
-            actions[i] = EditorState.PainterField.Action(actions[i].pixels - points)
-        }
+        actions[actions.size - 1] = EditorState.PainterField.Action(actions.last().pixels - points)
         _state.value = _state.value.copy(
             field = _state.value.field!!.copy(
                 actions = actions

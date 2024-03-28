@@ -119,6 +119,8 @@ fun EditorScreen(
                 }
         ) {
 
+            onEditorEvent(EditorEvent.BackStep)
+
 
             val rows = editorState.field!!.height
             val cols = editorState.field.width

@@ -59,11 +59,10 @@ fun CanvasField(
             .height(height.dp)
             .scale(scaleFactor)
             .offset(offsetFactor.x.dp, offsetFactor.y.dp)
-            .background(Color.Red)
             .pointerInput(isDrawable) {
                 if (isDrawable) {
                     detectTapGestures { onTap ->
-                        Log.d("===", "${onTap.x} ${onTap.y}")
+                        onEditorEvent(EditorEvent.ActionStart)
                         onEditorEvent(EditorEvent.TapPixel(onTap.x, onTap.y, width.dp.toPx()))
                     }
                 }
