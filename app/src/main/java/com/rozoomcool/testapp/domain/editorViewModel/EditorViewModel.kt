@@ -37,13 +37,13 @@ class EditorViewModel @Inject constructor(
 
             is EditorEvent.TapPixel -> {
                 viewModelScope.launch {
-                    onTapPixel(event.x, event.y, event.size)
+                    onTapPixel(event.x, event.y, event.width)
                 }
             }
 
             is EditorEvent.PanLine -> {
                 viewModelScope.launch {
-                    onPanLine(event.start, event.end, event.size)
+                    onPanLine(event.start, event.end, event.width)
                 }
             }
 
@@ -168,15 +168,17 @@ class EditorViewModel @Inject constructor(
         )
     }
 
-    private fun onTapPixel(x: Float, y: Float, size: IntSize) {
-        val localPixelSize = size.width / _state.value.field!!.width
+    private fun onTapPixel(x: Float, y: Float, width: Int) {
+        val cols = _state.value.field!!.width
+        val rows = _state.value.field!!.height
+        val localPixelSize = width / cols
 
         val cordX =
             (x / localPixelSize).toInt()
         val cordY =
             (y / localPixelSize).toInt()
 
-        if (cordX !in 0..<_state.value.field!!.width && cordY !in 0..<_state.value.field!!.height) {
+        if (cordX !in 0..<cols && cordY !in 0..<rows) {
             return
         }
 
@@ -198,8 +200,8 @@ class EditorViewModel @Inject constructor(
         addPixels(newPixels)
     }
 
-    private fun onPanLine(start: Offset, end: Offset, size: IntSize) {
-        val localPixelSize = size.width / _state.value.field!!.width
+    private fun onPanLine(start: Offset, end: Offset, width: Int) {
+        val localPixelSize = width / _state.value.field!!.width
 
         val x0 = ((start.x - (start.x % localPixelSize)) / localPixelSize).toInt()
         val x1 = ((end.x - (end.x % localPixelSize)) / localPixelSize).toInt()

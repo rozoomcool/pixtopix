@@ -27,6 +27,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.rozoomcool.testapp.domain.editorViewModel.EditorEvent
 import com.rozoomcool.testapp.domain.editorViewModel.EditorState
@@ -118,9 +119,11 @@ fun EditorScreen(
                 }
         ) {
 
+
             val rows = editorState.field!!.height
             val cols = editorState.field.width
-            val pixelSize: Float = (LocalConfiguration.current.screenWidthDp / cols).toFloat()
+            val width = LocalView.current.width
+            val pixelSize: Float = (width / cols).toFloat()
             val field = editorState.field
 
             CanvasField(
@@ -130,6 +133,7 @@ fun EditorScreen(
                 scaleFactor = scaleFactor,
                 offsetFactor = offsetFactor,
                 onEditorEvent = onEditorEvent,
+                width = width,
                 pixelSize = pixelSize,
                 zIndex = 1f,
                 isSelectable = editorState.editorTool is SelectableTool,
