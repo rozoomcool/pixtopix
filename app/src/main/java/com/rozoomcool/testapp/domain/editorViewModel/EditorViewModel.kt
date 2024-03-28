@@ -94,7 +94,11 @@ class EditorViewModel @Inject constructor(
         _state.value = _state.value.copy(
             field = _state.value.field!!.copy(
                 actions = _state.value.field!!.actions.toMutableList().apply {
-                    add(EditorState.PainterField.Action(setOf()))
+                    if (_state.value.field!!.actions.isEmpty()) {
+                        add(EditorState.PainterField.Action(setOf()))
+                    } else {
+                        add(_state.value.field!!.actions.last())
+                    }
                 }
             )
         )

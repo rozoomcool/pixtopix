@@ -23,15 +23,16 @@ data class EditorState(
 
         fun pixels(): Set<Pixel> {
             if (actions.isEmpty()) return setOf()
+//
+//            val pixels = mutableSetOf<Pixel>()
+//            for (i in (actions.size - 1)downTo 0) {
+//                actions[i].pixels.forEach {
+//                    pixels.add(it)
+//                }
+//            }
 
-            val pixels = mutableSetOf<Pixel>()
-            for (i in (actions.size - 1)downTo 0) {
-                actions[i].pixels.forEach {
-                    pixels.add(it)
-                }
-            }
-
-            return pixels
+//            return pixels
+            return actions.last().pixels
         }
 
         data class Layer(
