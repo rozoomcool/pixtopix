@@ -3,8 +3,8 @@ package com.rozoomcool.testapp.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val PurpleGrey80 = Color(0xFF302D36)
+val pinkColor = Color(0xFF92324E)
 
 val Purple40 = Color(0xFF8477A7)
 val PurpleGrey40 = Color(0xFF625b71)

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -22,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -32,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.rozoomcool.testapp.domain.editorViewModel.EditorEvent
 import com.rozoomcool.testapp.domain.editorViewModel.EditorState
 import com.rozoomcool.testapp.model.DrawableTool
+import com.rozoomcool.testapp.model.ExtendedTool
 import com.rozoomcool.testapp.model.SelectableTool
 import com.rozoomcool.testapp.model.mainTools
 import com.rozoomcool.testapp.presentation.editor.components.EditorBottomBar
@@ -67,19 +70,21 @@ fun EditorScreen(
             ) {
                 EditorTopBar(
                     editorState.title,
-                    onBackClickListener = {onBackButtonClick()},
+                    onBackClickListener = { onBackButtonClick() },
                     onSaveAsClickListener = {},
                     onSaveClickListener = {}
                 )
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .shadow(elevation = 4.dp)
                         .background(colorScheme.background)
+                        .padding(horizontal = 12.dp, vertical = 4.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(colorScheme.secondary)
                         .padding(8.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("текущий слой")
+                    Text(editorState.field!!.layers.last().name)
                 }
             }
         },
@@ -118,9 +123,6 @@ fun EditorScreen(
                     }
                 }
         ) {
-
-            onEditorEvent(EditorEvent.BackStep)
-
 
             val rows = editorState.field!!.height
             val cols = editorState.field.width

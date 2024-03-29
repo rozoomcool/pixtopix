@@ -32,6 +32,8 @@ sealed class EditorEvent {
     ): EditorEvent()
 
     data object BackStep: EditorEvent()
+
+    data class ChangeBrushSize(val size: Int): EditorEvent()
     data object ForwardStep: EditorEvent()
     data object ActionStart: EditorEvent()
 

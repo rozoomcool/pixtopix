@@ -1,13 +1,12 @@
 package com.rozoomcool.testapp.domain.editorViewModel
 
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rozoomcool.testapp.data.shared.PaletteSharedRepository
-import com.rozoomcool.testapp.model.Action
 import com.rozoomcool.testapp.model.EditorTool
 import com.rozoomcool.testapp.model.Pixel
+import com.rozoomcool.testapp.utils.EditorUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditorViewModel @Inject constructor(
-    private val paletteSharedRepository: PaletteSharedRepository
+    private val paletteSharedRepository: PaletteSharedRepository,
+    private val editorUtils: EditorUtils
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditorState())
@@ -87,7 +87,18 @@ class EditorViewModel @Inject constructor(
                     onActionStart()
                 }
             }
+            is EditorEvent.ChangeBrushSize -> {
+                viewModelScope.launch {
+                    onChangeBrushSize(event.size)
+                }
+            }
         }
+    }
+
+    private fun onChangeBrushSize(size: Int)  {
+        _state.value = _state.value.copy(
+            cBrushSize = size
+        )
     }
 
     private fun onActionStart() {
@@ -138,7 +149,7 @@ class EditorViewModel @Inject constructor(
     private fun onPickColor(color: Long) {
         paletteSharedRepository.putColor(color)
         _state.value = _state.value.copy(
-            currentColor = color
+            cColor = color
         )
     }
 
@@ -151,7 +162,7 @@ class EditorViewModel @Inject constructor(
 
     private fun onChangeColor(color: Long) {
         _state.value = _state.value.copy(
-            currentColor = color
+            cColor = color
         )
     }
 
@@ -173,6 +184,8 @@ class EditorViewModel @Inject constructor(
     }
 
     private fun onTapPixel(x: Float, y: Float, width: Float) {
+        val brushSize = _state.value.cBrushSize
+
         val cols = _state.value.field!!.width
         val rows = _state.value.field!!.height
         val localPixelSize = width / cols
@@ -186,17 +199,30 @@ class EditorViewModel @Inject constructor(
             return
         }
 
-        val pixel = Pixel(cordX, cordY, _state.value.currentColor)
+        val points = mutableSetOf<Pixel>()
+
+        for (i in -brushSize / 2..brushSize / 2) {
+            for (j in -brushSize / 2..brushSize / 2) {
+                if (i * i + j * j <= (brushSize * brushSize) / 4) { // Проверяем, лежит ли пиксель в пределах окружности
+                    val newX = cordX + i
+                    val newY = cordY + j
+                    if (newX in 0 until cols && newY in 0 until rows) {
+                       points.apply { add(Pixel(newX, newY, _state.value.cColor)) }
+                    }
+                }
+            }
+        }
+
         val newPixels: MutableSet<Pixel> =
             mutableSetOf<Pixel>().apply { addAll(_state.value.field!!.pixels()) }
 
         when (_state.value.editorTool) {
             is EditorTool.Brush -> newPixels.apply {
-                addAll(setOf(pixel))
+                addAll(points)
                 addPixels(newPixels)
             }
 
-            is EditorTool.Eraser -> removePixels(setOf(pixel))
+            is EditorTool.Eraser -> removePixels(points)
 
             else -> {}
         }
@@ -224,8 +250,6 @@ class EditorViewModel @Inject constructor(
 
             else -> {}
         }
-
-
     }
 
     private fun removePixels(points: Set<Pixel>) {
@@ -257,23 +281,35 @@ class EditorViewModel @Inject constructor(
     }
 
     private fun getPointsOnLine(x0: Int, y0: Int, x1: Int, y1: Int): Set<Pixel> {
+        val brushSize = _state.value.cBrushSize
         val points = mutableSetOf<Pixel>()
 
-        var x = x0
-        var y = y0
         val dx = kotlin.math.abs(x1 - x0)
         val dy = kotlin.math.abs(y1 - y0)
         val sx = if (x0 < x1) 1 else -1
         val sy = if (y0 < y1) 1 else -1
         var err = dx - dy
 
+        var x = x0
+        var y = y0
+
         while (true) {
-            if (x in 0..<_state.value.field!!.width && y in 0..<_state.value.field!!.height) {
-                points.add(Pixel(x, y, _state.value.currentColor))
+            for (i in -brushSize / 2..brushSize / 2) {
+                for (j in -brushSize / 2..brushSize / 2) {
+                    if (i * i + j * j <= (brushSize * brushSize) / 4) { // Проверяем, лежит ли пиксель в пределах окружности
+                        val newX = x + i
+                        val newY = y + j
+                        if (newX in 0 until _state.value.field!!.width && newY in 0 until _state.value.field!!.height) {
+                            points.add(Pixel(newX, newY, _state.value.cColor))
+                        }
+                    }
+                }
             }
+
             if (x == x1 && y == y1) {
                 break
             }
+
             val e2 = 2 * err
             if (e2 > -dy) {
                 err -= dy

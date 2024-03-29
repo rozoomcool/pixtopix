@@ -9,7 +9,8 @@ data class EditorState(
     val editorTool: EditorTool = EditorTool.Move,
     val field: PainterField? = null,
     val palette: Set<Long> = setOf(),
-    val currentColor: Long = 0xFF333333,
+    val cColor: Long = 0xFF912750,
+    val cBrushSize: Int = 1,
     val fieldStack: FieldStack = FieldStack()
 ) {
 
@@ -23,15 +24,6 @@ data class EditorState(
 
         fun pixels(): Set<Pixel> {
             if (actions.isEmpty()) return setOf()
-//
-//            val pixels = mutableSetOf<Pixel>()
-//            for (i in (actions.size - 1)downTo 0) {
-//                actions[i].pixels.forEach {
-//                    pixels.add(it)
-//                }
-//            }
-
-//            return pixels
             return actions.last().pixels
         }
 

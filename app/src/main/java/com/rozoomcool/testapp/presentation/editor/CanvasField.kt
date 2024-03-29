@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -88,7 +89,8 @@ fun CanvasField(
     ) {
 //        val pixelSize: Float = this.size.width / cols
         Log.d("===size", "${size.width}")
-        drawBackgroundLines(cols, rows, pixelSize)
+//        drawBackgroundLines(cols, rows, pixelSize)
+        drawBackground(cols, rows, pixelSize)
 
 
         if (pixels.isNotEmpty()) {
@@ -150,7 +152,7 @@ private fun DrawScope.drawModifiedPixels(pixels: Set<Pixel>, pixelSize: Float) {
             drawRect(
                 color = Color(pixel.color),
                 topLeft = Offset(x = pixelSize * pixel.x, y = pixelSize * pixel.y),
-                size = Size(pixelSize, pixelSize)
+                size = Size((pixelSize + 0.1).toFloat(), (pixelSize + 0.1).toFloat())
             )
         }
     }
