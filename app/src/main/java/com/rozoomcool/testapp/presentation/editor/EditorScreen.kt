@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rozoomcool.testapp.domain.editorViewModel.EditorEvent
 import com.rozoomcool.testapp.domain.editorViewModel.EditorState
@@ -40,6 +41,7 @@ import com.rozoomcool.testapp.model.mainTools
 import com.rozoomcool.testapp.presentation.editor.components.EditorBottomBar
 import com.rozoomcool.testapp.presentation.editor.components.EditorPaletteRail
 import com.rozoomcool.testapp.presentation.editor.components.EditorTopBar
+import com.rozoomcool.testapp.presentation.editor.components.LayersBar
 import kotlinx.coroutines.flow.flowOf
 
 @SuppressLint("MutableCollectionMutableState", "CoroutineCreationDuringComposition")
@@ -74,18 +76,7 @@ fun EditorScreen(
                     onSaveAsClickListener = {},
                     onSaveClickListener = {}
                 )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(colorScheme.background)
-                        .padding(horizontal = 12.dp, vertical = 4.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(colorScheme.secondary)
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(editorState.field!!.layers.last().name)
-                }
+                LayersBar(layers = editorState.field!!.layers)
             }
         },
         bottomBar = {
