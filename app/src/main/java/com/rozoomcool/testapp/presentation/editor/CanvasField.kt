@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
@@ -29,12 +31,15 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.graphics.set
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.whenStarted
 import com.rozoomcool.testapp.domain.editorViewModel.EditorEvent
 import com.rozoomcool.testapp.model.Pixel
 
@@ -90,7 +95,8 @@ fun CanvasField(
 //        val pixelSize: Float = this.size.width / cols
         Log.d("===size", "${size.width}")
 //        drawBackgroundLines(cols, rows, pixelSize)
-        drawBackground(cols, rows, pixelSize)
+//        drawBackground(cols, rows, pixelSize)
+        drawBackgroundFrame(cols, rows, pixelSize, scaleFactor)
 
 
         if (pixels.isNotEmpty()) {
@@ -144,6 +150,37 @@ private fun DrawScope.drawBackgroundLines(cols: Int, rows: Int, pixelSize: Float
             strokeWidth = 2f
         )
     }
+}
+
+private fun DrawScope.drawBackgroundFrame(cols: Int, rows: Int, pixelSize: Float, scaleFactor: Float) {
+    val fScale = if (rows > 64 || cols > 64) 4 else 1
+    val strokeWidth: Float = 3.dp.toPx() / scaleFactor
+
+    drawLine(
+        color = Color(0xFF3D3D3D),
+        start = Offset(0f, pixelSize * 0),
+        end = Offset(pixelSize * cols, pixelSize * 0),
+        strokeWidth = strokeWidth
+    )
+    drawLine(
+        color = Color(0xFF3D3D3D),
+        start = Offset(0f, pixelSize * rows),
+        end = Offset(pixelSize * cols, pixelSize * rows),
+        strokeWidth = strokeWidth
+    )
+
+    drawLine(
+        color = Color(0xFF3D3D3D),
+        start = Offset(pixelSize * cols, 0f),
+        end = Offset(pixelSize * cols, pixelSize * rows),
+        strokeWidth = strokeWidth
+    )
+    drawLine(
+        color = Color(0xFF3D3D3D),
+        start = Offset(pixelSize * 0, 0f),
+        end = Offset(pixelSize * 0, pixelSize * rows),
+        strokeWidth = strokeWidth
+    )
 }
 
 private fun DrawScope.drawModifiedPixels(pixels: Set<Pixel>, pixelSize: Float) {

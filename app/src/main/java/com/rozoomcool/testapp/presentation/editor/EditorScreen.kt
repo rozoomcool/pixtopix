@@ -57,7 +57,7 @@ fun EditorScreen(
     }
 
     var scaleFactor by remember {
-        mutableFloatStateOf(1f)
+        mutableFloatStateOf(0.9f)
     }
 
     var offsetFactor by remember {
@@ -89,7 +89,7 @@ fun EditorScreen(
                     editorState = editorState,
                     onEditorEvent = onEditorEvent,
                     onBackStepClickListener = { onEditorEvent(EditorEvent.BackStep) },
-                    onForwardStepClickListener = {},
+                    onForwardStepClickListener = { onEditorEvent(EditorEvent.ForwardStep) },
                 )
                 EditorBottomBar(
                     editorState = editorState,

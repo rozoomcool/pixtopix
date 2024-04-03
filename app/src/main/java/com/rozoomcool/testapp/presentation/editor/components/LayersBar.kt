@@ -35,10 +35,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import com.rozoomcool.testapp.domain.editorViewModel.EditorState
+import com.rozoomcool.testapp.domain.editorViewModel.Layer
 
 @Composable
-fun LayersBar(layers: List<EditorState.PainterField.Layer>) {
+fun LayersBar(layers: List<Layer>) {
 
     var isExpanded by remember {
         mutableStateOf(false)

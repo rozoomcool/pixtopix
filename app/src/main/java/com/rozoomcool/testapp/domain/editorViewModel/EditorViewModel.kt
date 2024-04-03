@@ -79,6 +79,7 @@ class EditorViewModel @Inject constructor(
 
             is EditorEvent.ForwardStep -> {
                 viewModelScope.launch {
+                    onForwardStep()
                 }
             }
 
@@ -104,46 +105,25 @@ class EditorViewModel @Inject constructor(
     private fun onActionStart() {
         _state.value = _state.value.copy(
             field = _state.value.field!!.copy(
-                actions = _state.value.field!!.actions.toMutableList().apply {
-                    if (_state.value.field!!.actions.isEmpty()) {
-                        add(EditorState.PainterField.Action(setOf()))
-                    } else {
-                        add(_state.value.field!!.actions.last())
-                    }
-                }
+                editorActions = _state.value.field!!.editorActions.addAction()
             )
         )
     }
 
     private fun onBackStep() {
-//        var currentStep = _state.value.fieldStack.currentStep
-//        if (currentStep > 0) currentStep -= 1
-//
-//        val actions: MutableList<Action> = _state.value.fieldStack.actions.toMutableList()
-//        if (actions.size - currentStep > 5) {
-//            actions.apply {
-//                this.removeLast()
-//            }
-//        }
-//
-//        _state.value = _state.value.copy(
-//            fieldStack = _state.value.fieldStack.copy(
-//                currentStep = currentStep,
-//                actions = actions
-//            )
-//        )
-        if (_state.value.field!!.actions.isNotEmpty()) {
-            _state.value = _state.value.copy(
-                field = _state.value.field!!.copy(
-                    actions = _state.value.field!!.actions.toMutableList().apply {
-//                        if(last().pixels.isEmpty()) {
-//                            removeLast()
-//                        }
-                        removeLast()
-                    }
-                )
+        _state.value = _state.value.copy(
+            field = _state.value.field!!.copy(
+                editorActions = _state.value.field!!.editorActions.actionStepBack()
             )
-        }
+        )
+    }
+
+    private fun onForwardStep() {
+        _state.value = _state.value.copy(
+            field = _state.value.field!!.copy(
+                editorActions = _state.value.field!!.editorActions.actionStepForward()
+            )
+        )
     }
 
     private fun onPickColor(color: Long) {
@@ -178,7 +158,7 @@ class EditorViewModel @Inject constructor(
             field = EditorState.PainterField(
                 width = width,
                 height = height,
-                type = EditorState.PainterField.FieldType.Transparent
+                type = FieldType.Transparent
             )
         )
     }
@@ -237,14 +217,11 @@ class EditorViewModel @Inject constructor(
         val y1 = ((end.y - (end.y % localPixelSize)) / localPixelSize).toInt()
 
         val points = getPointsOnLine(x0, y0, x1, y1)
-        val newPixels: MutableSet<Pixel> =
-            mutableSetOf<Pixel>().apply { addAll(_state.value.field!!.pixels()) }
+//        val newPixels: MutableSet<Pixel> =
+//            mutableSetOf<Pixel>().apply { addAll(_state.value.field!!.pixels()) }
 
         when (_state.value.editorTool) {
-            is EditorTool.Brush -> newPixels.apply {
-                addAll(points)
-                addPixels(newPixels)
-            }
+            is EditorTool.Brush -> addPixels(points)
 
             is EditorTool.Eraser -> removePixels(points)
 
@@ -253,29 +230,17 @@ class EditorViewModel @Inject constructor(
     }
 
     private fun removePixels(points: Set<Pixel>) {
-        val actions = _state.value.field!!.actions.toMutableList()
-        actions[actions.size - 1] = EditorState.PainterField.Action(actions.last().pixels - points)
         _state.value = _state.value.copy(
             field = _state.value.field!!.copy(
-                actions = actions
+                editorActions = _state.value.field!!.editorActions.removePixels(points)
             )
         )
     }
 
-    private fun addPixels(newPixels: MutableSet<Pixel>) {
-        val actions: MutableList<EditorState.PainterField.Action> =
-            _state.value.field!!.actions.toMutableList()
-        val newActionsValue = if (actions.isEmpty()) {
-            listOf(EditorState.PainterField.Action(newPixels.toMutableSet()))
-        } else {
-            newPixels.apply { addAll(actions.last().pixels) }
-            actions[actions.size - 1] = EditorState.PainterField.Action(newPixels)
-            actions
-        }
-
+    private fun addPixels(newPixels: Set<Pixel>) {
         _state.value = _state.value.copy(
             field = _state.value.field!!.copy(
-                actions = newActionsValue
+                editorActions = _state.value.field!!.editorActions.addPixels(newPixels)
             )
         )
     }
