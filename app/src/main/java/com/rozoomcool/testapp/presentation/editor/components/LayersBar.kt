@@ -2,6 +2,7 @@ package com.rozoomcool.testapp.presentation.editor.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material.icons.rounded.RestoreFromTrash
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.rozoomcool.testapp.domain.editorViewModel.EditorState
 
@@ -47,14 +50,14 @@ fun LayersBar(layers: List<EditorState.PainterField.Layer>) {
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 12.dp, vertical = 4.dp)
+            .padding(horizontal = 12.dp)
             .animateContentSize(),
     ) {
         Spacer(modifier = Modifier.height(8.dp))
         if (isExpanded) {
             Column(
                 modifier = Modifier
-                    .height(136.dp)
+                    .height(if (isExpanded) 100.dp else 0.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -70,20 +73,36 @@ fun LayersBar(layers: List<EditorState.PainterField.Layer>) {
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Row(
+                            modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start
-                        ) {
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ){
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start
+                            ) {
+                                IconButton(
+                                    modifier = Modifier.size(32.dp),
+                                    onClick = { /*TODO*/ }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Visibility,
+                                        contentDescription = null
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(layers.last().name)
+
+                            }
                             IconButton(
                                 modifier = Modifier.size(32.dp),
                                 onClick = { /*TODO*/ }
                             ) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Visibility,
+                                    imageVector = Icons.Rounded.RestoreFromTrash,
                                     contentDescription = null
                                 )
                             }
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(layers.last().name)
                         }
                     }
                 }
@@ -99,29 +118,47 @@ fun LayersBar(layers: List<EditorState.PainterField.Layer>) {
                 contentAlignment = Alignment.CenterStart
             ) {
                 Row(
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ){
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        IconButton(
+                            modifier = Modifier.size(32.dp),
+                            onClick = { /*TODO*/ }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Visibility,
+                                contentDescription = null
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(layers.last().name)
+
+                    }
                     IconButton(
                         modifier = Modifier.size(32.dp),
                         onClick = { /*TODO*/ }
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Visibility,
+                            imageVector = Icons.Rounded.RestoreFromTrash,
                             contentDescription = null
                         )
                     }
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(layers.last().name)
-
                 }
             }
         }
         Spacer(modifier = Modifier.height(2.dp))
-        IconButton(onClick = {
-            isExpanded = !isExpanded
-        }) {
-            Icon(modifier = Modifier.size(32.dp), imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown, contentDescription = null)
-        }
+
+        Icon(
+            modifier = Modifier
+                .size(32.dp)
+                .pointerInput(true) { detectTapGestures { isExpanded = !isExpanded } },
+            imageVector = if (isExpanded) Icons.Rounded.KeyboardArrowUp else Icons.Rounded.KeyboardArrowDown,
+            contentDescription = null
+        )
     }
 }
