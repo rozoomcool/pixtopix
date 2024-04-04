@@ -1,10 +1,13 @@
 package com.rozoomcool.testapp.domain.editorViewModel
 
+import android.companion.AssociatedDevice
+import android.nfc.cardemulation.HostNfcFService
 import android.util.Log
 import androidx.compose.runtime.Immutable
 import com.rozoomcool.testapp.model.EditorTool
 import com.rozoomcool.testapp.model.FieldStack
 import com.rozoomcool.testapp.model.Pixel
+import java.sql.SQLData
 
 @Immutable
 data class EditorState(
@@ -35,7 +38,7 @@ data class EditorState(
 
 @Immutable
 data class EditorActionList(
-    private val editorActions: List<EditorAction> = listOf(EditorAction(setOf())),
+    private val editorActions: List<EditorAction> = emptyList(),
     val currentIndex: Int = 0
 ) {
 
@@ -49,34 +52,40 @@ data class EditorActionList(
     fun addAction(): EditorActionList {
 
         val newActionList = editorActions.toMutableList().subList(
-                if (currentIndex == MAX_STEPS) 1 else 0,
-                editorActions.size
-            ).apply {
-            add(editorActions[currentIndex])
+            if (currentIndex == MAX_STEPS - 1) 1 else 0,
+            editorActions.size
+        ).apply {
+            if (isNotEmpty()) add(editorActions[currentIndex])
+            else add(EditorAction(setOf()))
         }
 
         return copy(
             editorActions = newActionList,
-            currentIndex = minOf(if (currentIndex + 1 < editorActions.size - 1) currentIndex + 1 else editorActions.size - 1, MAX_STEPS)
+            currentIndex = newActionList.size - 1
         )
     }
 
     fun actionStepBack(): EditorActionList {
-        if (currentIndex == 0) {
-            return this
+        if (currentIndex <= 0) {
+            return copy(currentIndex = 0)
         }
         return copy(currentIndex = currentIndex - 1)
     }
 
+
+
+
+
+
     fun actionStepForward(): EditorActionList {
-        if (currentIndex < editorActions.size) {
+        if (currentIndex < editorActions.size - 1) {
             return copy(currentIndex = currentIndex + 1)
         }
         return this
     }
 
     fun addPixels(pixels: Set<Pixel>): EditorActionList {
-        Log.d("___", "$currentIndex ${editorActions.size}")
+//        Log.d("___", "$currentIndex ${editorActions.size}")
         val newEditorActions = editorActions.toMutableList()
         newEditorActions[currentIndex] = EditorAction(editorActions[currentIndex].pixels + pixels)
 
@@ -86,7 +95,7 @@ data class EditorActionList(
     }
 
     fun removePixels(pixels: Set<Pixel>): EditorActionList {
-        if(editorActions.isEmpty()) {
+        if (editorActions.isEmpty()) {
             return this
         }
         val newEditorActions = editorActions.toMutableList()
@@ -116,3 +125,27 @@ data class Layer(
     val name: String,
     val visible: Boolean = true
 )
+//@immutable
+//data class Rosul(
+//    val name: String,
+//    val surname: String,
+//    val poshly: Boolean = true,
+//    val fathername: String,
+//    val pixels: Set<Pixel>
+//
+//)
+//fun Rosul (
+//    boolean: Boolean,
+//    fathername: String,
+//    sqlData: SQLData,
+//    associatedDevice: AssociatedDevice,
+//    associatedDevice: AssociatedDevice,
+//    hostNfcFService: HostNfcFService
+//)
+//fun Ros (
+//    delete_project()
+//    delete_windows_10()
+//    delete_github()
+//    rosuol_poshly()
+//    koklin_delete()
+//)
