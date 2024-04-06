@@ -1,5 +1,6 @@
 [versions]
 agp = "8.3.0"
+colorpickerCompose = "1.0.7"
 googleHiltAndroid = "2.38.1"
 hiltAndroid = "2.49"
 hiltAndroidCompiler = "2.44"
@@ -30,6 +31,7 @@ androidx-hilt-navigation-fragment = { module = "androidx.hilt:hilt-navigation-fr
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltNavigationFragment" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+colorpicker-compose = { module = "com.github.skydoves:colorpicker-compose", version.ref = "colorpickerCompose" }
 dagger-hilt-android-v2381 = { module = "com.google.dagger:hilt-android", version.ref = "googleHiltAndroid" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
