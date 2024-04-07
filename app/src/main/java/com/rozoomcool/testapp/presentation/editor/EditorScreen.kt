@@ -12,14 +12,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,12 +43,15 @@ import com.rozoomcool.testapp.model.DrawableTool
 import com.rozoomcool.testapp.model.ExtendedTool
 import com.rozoomcool.testapp.model.SelectableTool
 import com.rozoomcool.testapp.model.mainTools
+import com.rozoomcool.testapp.presentation.editor.components.CustomBottomSheet
 import com.rozoomcool.testapp.presentation.editor.components.EditorBottomBar
 import com.rozoomcool.testapp.presentation.editor.components.EditorPaletteRail
 import com.rozoomcool.testapp.presentation.editor.components.EditorTopBar
 import com.rozoomcool.testapp.presentation.editor.components.LayersBar
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("MutableCollectionMutableState", "CoroutineCreationDuringComposition")
 @Composable
 fun EditorScreen(
@@ -64,6 +72,12 @@ fun EditorScreen(
         mutableStateOf(Offset.Zero)
     }
 
+    var isModalSheetExpanded by remember {
+        mutableStateOf(false)
+    }
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+
     Scaffold(
         topBar = {
             Column(
@@ -73,10 +87,10 @@ fun EditorScreen(
                 EditorTopBar(
                     editorState.title,
                     onBackClickListener = { onBackButtonClick() },
-                    onSaveAsClickListener = {},
+                    onSaveAsClickListener = { isModalSheetExpanded = true },
                     onSaveClickListener = {}
                 )
-                LayersBar(layers = editorState.field!!.layers)
+//                LayersBar(layers = editorState.field!!.layers)
             }
         },
         bottomBar = {
@@ -114,6 +128,13 @@ fun EditorScreen(
                     }
                 }
         ) {
+            if (isModalSheetExpanded) {
+                CustomBottomSheet(
+                    sheetState = sheetState,
+                    onDismiss = { isModalSheetExpanded = false },
+                    onSave = { onEditorEvent(EditorEvent.SaveBitmap) }
+                )
+            }
 
             val rows = editorState.field!!.height
             val cols = editorState.field.width

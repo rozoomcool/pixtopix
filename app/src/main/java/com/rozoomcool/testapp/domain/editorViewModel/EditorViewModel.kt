@@ -1,6 +1,15 @@
 package com.rozoomcool.testapp.domain.editorViewModel
 
+import android.graphics.Bitmap
+import android.os.Environment
+import android.util.Log
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.graphics.BitmapCompat
+import androidx.core.graphics.set
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rozoomcool.testapp.data.shared.PaletteSharedRepository
@@ -12,6 +21,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 import javax.inject.Inject
 
 @HiltViewModel
@@ -93,6 +105,32 @@ class EditorViewModel @Inject constructor(
                     onChangeBrushSize(event.size)
                 }
             }
+            is EditorEvent.SaveBitmap -> {
+                viewModelScope.launch {
+                    onEditorSaveBitmap()
+                }
+            }
+        }
+    }
+
+    private fun onEditorSaveBitmap() {
+        val bitmap = ImageBitmap(_state.value.field!!.width, _state.value.field!!.height).asAndroidBitmap()
+        _state.value.field!!.editorActions.getCurrentActionPixels().forEach {
+            bitmap[it.x, it.y] = Color(it.color).toArgb()
+        }
+
+        val extStorageDirectory = Environment.getExternalStorageDirectory().toString()
+        val outStream: OutputStream
+        val file = File(extStorageDirectory, "${_state.value.title}.png");
+
+        try {
+            outStream = FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream)
+            outStream.flush();
+            outStream.close();
+            Log.d("@@@@", "Saved $extStorageDirectory")
+        } catch (e: Exception) {
+            Log.d("@@@@", "Error: $e")
         }
     }
 

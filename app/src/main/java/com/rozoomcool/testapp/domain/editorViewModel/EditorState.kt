@@ -38,7 +38,7 @@ data class EditorState(
 
 @Immutable
 data class EditorActionList(
-    private val editorActions: List<EditorAction> = emptyList(),
+    private val editorActions: List<EditorAction> = listOf(EditorAction(setOf())),
     val currentIndex: Int = 0
 ) {
 
@@ -72,11 +72,6 @@ data class EditorActionList(
         return copy(currentIndex = currentIndex - 1)
     }
 
-
-
-
-
-
     fun actionStepForward(): EditorActionList {
         if (currentIndex < editorActions.size - 1) {
             return copy(currentIndex = currentIndex + 1)
@@ -85,9 +80,8 @@ data class EditorActionList(
     }
 
     fun addPixels(pixels: Set<Pixel>): EditorActionList {
-//        Log.d("___", "$currentIndex ${editorActions.size}")
         val newEditorActions = editorActions.toMutableList()
-        newEditorActions[currentIndex] = EditorAction(editorActions[currentIndex].pixels + pixels)
+        newEditorActions[currentIndex] = EditorAction((editorActions[currentIndex].pixels - pixels) + pixels)
 
         return copy(
             editorActions = newEditorActions

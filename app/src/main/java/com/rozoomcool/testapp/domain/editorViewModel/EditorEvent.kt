@@ -39,4 +39,6 @@ sealed class EditorEvent {
 
     data object GetPalette: EditorEvent()
     data class PickColor(val color: Long): EditorEvent()
+
+    data object SaveBitmap: EditorEvent()
 }

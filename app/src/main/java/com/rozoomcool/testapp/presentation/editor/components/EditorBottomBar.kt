@@ -51,8 +51,6 @@ fun EditorBottomBar(
     var isShowColorPicker by remember {
         mutableStateOf(false)
     }
-//    colorController.selectByColor(Color(editorState.cColor), true)
-//    colorController.setBrightness(1f, true)
     if (isShowColorPicker) {
         PickColorDialog(
             controller = colorController,
