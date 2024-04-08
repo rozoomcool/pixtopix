@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
 
     implementation(libs.colorpicker.compose)
+    implementation(libs.accompanist.permissions)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

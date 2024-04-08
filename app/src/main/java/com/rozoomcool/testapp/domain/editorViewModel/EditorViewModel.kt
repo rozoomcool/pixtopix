@@ -1,7 +1,10 @@
 package com.rozoomcool.testapp.domain.editorViewModel
 
+import android.content.ContentValues
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -17,6 +20,7 @@ import com.rozoomcool.testapp.model.EditorTool
 import com.rozoomcool.testapp.model.Pixel
 import com.rozoomcool.testapp.utils.EditorUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,6 +32,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditorViewModel @Inject constructor(
+    @ApplicationContext val context: Context,
     private val paletteSharedRepository: PaletteSharedRepository,
     private val editorUtils: EditorUtils
 ) : ViewModel() {
@@ -118,21 +123,62 @@ class EditorViewModel @Inject constructor(
         _state.value.field!!.editorActions.getCurrentActionPixels().forEach {
             bitmap[it.x, it.y] = Color(it.color).toArgb()
         }
-
-        val extStorageDirectory = Environment.getExternalStorageDirectory().toString()
-        val outStream: OutputStream
-        val file = File(extStorageDirectory, "${_state.value.title}.png");
-
-        try {
-            outStream = FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream)
-            outStream.flush();
-            outStream.close();
-            Log.d("@@@@", "Saved $extStorageDirectory")
-        } catch (e: Exception) {
-            Log.d("@@@@", "Error: $e")
+        val file = saveBitmapToFile(_state.value.title, bitmap)
+        if (file != null) {
+            Log.d("@@@@", "Saved ${file.absolutePath}")
+        } else {
+            Log.d("@@@@", "Error: Failed to save bitmap")
         }
     }
+
+    private fun saveBitmapToFile(title: String, bitmap: Bitmap): File? {
+        val imagesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val imageFile = File(imagesDir, "$title.png")
+
+        return try {
+            val outputStream = FileOutputStream(imageFile)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            outputStream.flush()
+            outputStream.close()
+            // Add the image to the system gallery
+            addToGallery(imageFile)
+            imageFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun addToGallery(imageFile: File) {
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, imageFile.name)
+            put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+            put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+        }
+
+        context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+    }
+
+//    private fun onEditorSaveBitmap() {
+//        val bitmap = ImageBitmap(_state.value.field!!.width, _state.value.field!!.height).asAndroidBitmap()
+//        _state.value.field!!.editorActions.getCurrentActionPixels().forEach {
+//            bitmap[it.x, it.y] = Color(it.color).toArgb()
+//        }
+//
+//        val extStorageDirectory = Environment.getExternalStorageDirectory().toString()
+//        val outStream: OutputStream
+//        val file = File(extStorageDirectory, "${_state.value.title}.png");
+//
+//        try {
+//            outStream = FileOutputStream(file);
+//            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream)
+//            outStream.flush();
+//            outStream.close();
+//            Log.d("@@@@", "Saved $extStorageDirectory")
+//        } catch (e: Exception) {
+//            Log.d("@@@@", "Error: $e")
+//        }
+//    }
 
     private fun onChangeBrushSize(size: Int)  {
         _state.value = _state.value.copy(

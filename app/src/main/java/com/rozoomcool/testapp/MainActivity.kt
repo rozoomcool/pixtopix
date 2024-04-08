@@ -1,54 +1,50 @@
 package com.rozoomcool.testapp
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.rozoomcool.testapp.ui.theme.TestappTheme
 import com.rozoomcool.testapp.presentation.MainScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @SuppressLint("PermissionLaunchedDuringComposition")
+    @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val launcher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.RequestPermission(),
-                onResult = { isGranted: Boolean ->
-                    if (isGranted) {
-                        Log.d("ExampleScreen", "PERMISSION GRANTED")
 
-                    } else {
-                        Log.d("ExampleScreen", "PERMISSION DENIED")
-                    }
-                })
+//            val storagePermissionState = rememberPermissionState(
+//                Manifest.permission.MANAGE_EXTERNAL_STORAGE
+//            )
+//            storagePermissionState.status.shouldShowRationale
+
 
             TestappTheme(
                 darkTheme = true
             ) {
 
-                when (PackageManager.PERMISSION_GRANTED) {
-                    ContextCompat.checkSelfPermission(
-                        applicationContext,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ) -> {
-                        Log.d("ExampleScreen", "Code requires permission")
-                    }
 
-                    else -> {
-                        LaunchedEffect(key1 = true) {
-                            launcher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        }
-                    }
-                }
+
+//                if (!storagePermissionState.status.isGranted) {
+//                    storagePermissionState.launchPermissionRequest()
+//                }
+
                 MainScreen()
             }
         }
