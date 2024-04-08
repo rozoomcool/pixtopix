@@ -1,5 +1,8 @@
 package com.rozoomcool.testapp.presentation.editor.components
 
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -35,7 +38,6 @@ fun CustomBottomSheet(
         },
         sheetState = sheetState
     ) {
-        // Sheet content
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -45,7 +47,10 @@ fun CustomBottomSheet(
         ) {
             Text("Сохранить изображение как", style = typography.titleLarge)
             Spacer(modifier = Modifier.height(16.dp))
-            ElevatedButton(onClick = { onSave() }) {
+            ElevatedButton(onClick = {
+
+                onSave()
+            }) {
                 Text(text = "Сохранить")
             }
             Spacer(modifier = Modifier.height(48.dp))
