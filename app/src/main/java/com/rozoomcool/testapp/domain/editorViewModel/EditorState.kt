@@ -119,27 +119,3 @@ data class Layer(
     val name: String,
     val visible: Boolean = true
 )
-//@immutable
-//data class Rosul(
-//    val name: String,
-//    val surname: String,
-//    val poshly: Boolean = true,
-//    val fathername: String,
-//    val pixels: Set<Pixel>
-//
-//)
-//fun Rosul (
-//    boolean: Boolean,
-//    fathername: String,
-//    sqlData: SQLData,
-//    associatedDevice: AssociatedDevice,
-//    associatedDevice: AssociatedDevice,
-//    hostNfcFService: HostNfcFService
-//)
-//fun Ros (
-//    delete_project()
-//    delete_windows_10()
-//    delete_github()
-//    rosuol_poshly()
-//    koklin_delete()
-//)
